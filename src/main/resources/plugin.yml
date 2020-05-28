@@ -1,5 +1,7 @@
 name: Voltskiya
-version: ${project.version}
+version: 1.0
 main: com.voltskiya.core.Voltskiya
 api-version: 1.15
 authors: [Nesaak, appleptr16]
+softdepend:
+  - LuckPerms

@@ -1,14 +1,25 @@
 package com.voltskiya.core;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 
 public abstract class VoltskiyaModule {
 
     private boolean isEnabled;
+    private YamlConfiguration configuration;
+
+    void init() {
+    }
 
     public abstract void enabled();
 
     public abstract String getName();
+
+    boolean shouldEnable() {
+        return true;
+    }
+
 
     protected void setEnabled(boolean enabled) {
         isEnabled = isEnabled;
@@ -16,10 +27,6 @@ public abstract class VoltskiyaModule {
 
     public boolean isEnabled() {
         return isEnabled;
-    }
-
-    boolean shouldEnable() {
-        return true;
     }
 
     public File getDataFolder() {

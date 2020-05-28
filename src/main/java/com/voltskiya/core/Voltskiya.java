@@ -109,6 +109,7 @@ public final class Voltskiya extends JavaPlugin {
     }
 
     public void enableModule(VoltskiyaModule module) {
+        module.init();
         module.setEnabled(true);
         module.enabled();
         getLogger().log(Level.INFO, "Enabled Voltskiya Module: " + module.getName());

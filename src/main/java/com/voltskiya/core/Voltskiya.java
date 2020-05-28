@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandException;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -15,8 +16,11 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public final class Voltskiya extends JavaPlugin {
 
@@ -24,8 +28,8 @@ public final class Voltskiya extends JavaPlugin {
 
     private LuckPerms luckPerms;
     private PaperCommandManager commandManager;
-    private List<VoltskiyaModule> loadedModules = new ArrayList();
-    private List<VoltskiyaModule> unloadedModules = new ArrayList();
+
+    private Map<VoltskiyaModule, Boolean> modules = new HashMap<>();
     private List<String> loadedJars = new ArrayList<>();
 
     @Override
@@ -63,13 +67,17 @@ public final class Voltskiya extends JavaPlugin {
 
     private void loadDependency(File file) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-        method.setAccessible(true);
+        if (!method.isAccessible()) method.setAccessible(true);
         URLClassLoader loader = (URLClassLoader) getClass().getClassLoader();
         method.invoke(loader, file.getAbsoluteFile().toURI().toURL());
     }
 
     public boolean isLoaded(String dependency) {
         return loadedJars.contains(dependency);
+    }
+
+    public List<String> getLoadedJars() {
+        return loadedJars;
     }
 
     //Dynamically load dependencies end
@@ -88,33 +96,48 @@ public final class Voltskiya extends JavaPlugin {
                 return;
             }
             if (module.shouldEnable()) {
-                registerModule(module);
+                loadModule(module);
             } else {
-                failedRegisterModule(module);
+                failedLoadModule(module);
             }
         });
-        getLogger().log(Level.INFO, "Loaded " + loadedModules.size() + " Voltskiya modules.");
-        getLogger().log(Level.INFO, "Failed to load " + unloadedModules.size() + " Voltskiya modules.");
+        getLogger().log(Level.INFO, "Loaded " + modules.values().stream().filter(bool -> bool).collect(Collectors.toList()).size() + " Voltskiya modules.");
+        getLogger().log(Level.INFO, "Failed to load " + modules.values().stream().filter(bool -> !bool).collect(Collectors.toList()).size() + " Voltskiya modules.");
     }
 
-    private void registerModule(VoltskiyaModule module) {
+    private void failedLoadModule(VoltskiyaModule module) {
+        modules.put(module, false);
+        getLogger().log(Level.WARNING, "Voltskiya Module did not load: " + module.getName());
+    }
+
+    public void loadModule(VoltskiyaModule module) {
         module.startModule();
-        loadedModules.add(module);
-        getLogger().log(Level.INFO, "Registered Voltskiya Module: " + module.getName());
+        modules.put(module, true);
+        getLogger().log(Level.INFO, "Loaded Voltskiya Module: " + module.getName());
     }
 
-    private void failedRegisterModule(VoltskiyaModule module) {
-        unloadedModules.add(module);
-        getLogger().log(Level.WARNING, "Voltskiya Module Did Not Load: " + module.getName());
-    }
-
-    private <T extends VoltskiyaModule> T getModule(Class<T> module) {
-        for (VoltskiyaModule loadedModule : loadedModules) {
-            if (loadedModule.getClass().isInstance(module)) {
-                return (T) loadedModule;
+    public <T extends VoltskiyaModule> T getModule(Class<T> moduleClass) {
+        for (VoltskiyaModule module : modules.keySet()) {
+            if (module.getClass().isInstance(moduleClass)) {
+                return (T) module;
             }
         }
         return null;
+    }
+
+    public VoltskiyaModule getModule(String name) {
+        for (VoltskiyaModule module : modules.keySet()) {
+            if (module.getName().equalsIgnoreCase(name)) return module;
+        }
+        return null;
+    }
+
+    public boolean isLoaded(VoltskiyaModule module) {
+        return modules.get(module);
+    }
+
+    public <T extends VoltskiyaModule> boolean isLoaded(Class<T> moduleClass) {
+        return isLoaded(getModule(moduleClass));
     }
 
     // Module system end
@@ -141,6 +164,14 @@ public final class Voltskiya extends JavaPlugin {
 
     private void setupACF() {
         commandManager = new PaperCommandManager(this);
+        commandManager.getCommandContexts().registerContext(VoltskiyaModule.class, context -> {
+            String name = context.popFirstArg();
+            for (VoltskiyaModule module : modules.keySet()) {
+                if (module.getName().equalsIgnoreCase(name)) return module;
+            }
+            throw new CommandException("Invalid Module Specified, " + name);
+        });
+        commandManager.getCommandCompletions().registerAsyncCompletion("modules", context -> modules.keySet().stream().map(module -> module.getName()).collect(Collectors.toList()));
     }
 
     public PaperCommandManager getCommandManager() {

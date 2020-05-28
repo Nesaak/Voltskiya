@@ -34,7 +34,7 @@ public final class Voltskiya extends JavaPlugin {
 
     // Module system start
 
-    public void registerModules() {
+    private void registerModules() {
         Reflections reflections = new Reflections("com.voltskiya.core", new SubTypesScanner(true));
         reflections.getSubTypesOf(VoltskiyaModule.class).forEach(moduleClass -> {
             VoltskiyaModule module;
@@ -49,10 +49,19 @@ public final class Voltskiya extends JavaPlugin {
         getLogger().log(Level.INFO, "Loaded " + loadedModules.size() + " Voltskiya modules.");
     }
 
-    public void registerModule(VoltskiyaModule module) {
+    private void registerModule(VoltskiyaModule module) {
         module.startModule();
         loadedModules.add(module);
         getLogger().log(Level.INFO, "Registered Voltskiya Module: " + module.getName());
+    }
+
+    private VoltskiyaModule getModule(Class<VoltskiyaModule> module) {
+        for (VoltskiyaModule loadedModule : loadedModules) {
+           if (loadedModule.getClass().isInstance(module)) {
+               return loadedModule;
+           }
+        }
+        return null;
     }
 
     // Module system end

@@ -4,10 +4,10 @@ import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.VoltskiyaModule;
 import org.bukkit.Bukkit;
 
-public class ModuleChat implements VoltskiyaModule {
+public class ModuleChat extends VoltskiyaModule {
 
     @Override
-    public void startModule() {
+    public void enabled() {
         Bukkit.getPluginManager().registerEvents(new ChatEvents(), Voltskiya.get());
     }
 

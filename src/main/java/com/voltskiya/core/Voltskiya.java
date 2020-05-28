@@ -15,7 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,7 @@ public final class Voltskiya extends JavaPlugin {
     private LuckPerms luckPerms;
     private PaperCommandManager commandManager;
 
-    private Map<VoltskiyaModule, Boolean> modules = new HashMap<>();
+    private List<VoltskiyaModule> modules = new ArrayList();
     private List<String> loadedJars = new ArrayList<>();
 
     @Override
@@ -92,29 +93,29 @@ public final class Voltskiya extends JavaPlugin {
                 e.printStackTrace();
                 return;
             }
+            registerModule(module);
             if (module.shouldEnable()) {
-                loadModule(module);
-            } else {
-                failedLoadModule(module);
+                enableModule(module);
             }
         });
-        getLogger().log(Level.INFO, "Loaded " + modules.values().stream().filter(bool -> bool).collect(Collectors.toList()).size() + " Voltskiya modules.");
-        getLogger().log(Level.INFO, "Failed to load " + modules.values().stream().filter(bool -> !bool).collect(Collectors.toList()).size() + " Voltskiya modules.");
+        getLogger().log(Level.INFO, "Loaded " + modules.stream().filter(module -> module.isEnabled()).collect(Collectors.toList()).size() + " Voltskiya modules.");
+        getLogger().log(Level.INFO, "Failed to load " + modules.stream().filter(module -> !module.isEnabled()).collect(Collectors.toList()).size() + " Voltskiya modules.");
     }
 
-    private void failedLoadModule(VoltskiyaModule module) {
-        modules.put(module, false);
-        getLogger().log(Level.WARNING, "Voltskiya Module did not load: " + module.getName());
+    private void registerModule(VoltskiyaModule module) {
+        modules.add(module);
+        module.setEnabled(false);
+        getLogger().log(Level.WARNING, "Registered Voltskiya Module " + module.getName());
     }
 
-    public void loadModule(VoltskiyaModule module) {
-        module.startModule();
-        modules.put(module, true);
-        getLogger().log(Level.INFO, "Loaded Voltskiya Module: " + module.getName());
+    public void enableModule(VoltskiyaModule module) {
+        module.setEnabled(true);
+        module.enabled();
+        getLogger().log(Level.INFO, "Enabled Voltskiya Module: " + module.getName());
     }
 
     public <T extends VoltskiyaModule> T getModule(Class<T> moduleClass) {
-        for (VoltskiyaModule module : modules.keySet()) {
+        for (VoltskiyaModule module : modules) {
             if (module.getClass().isInstance(moduleClass)) {
                 return (T) module;
             }
@@ -123,22 +124,14 @@ public final class Voltskiya extends JavaPlugin {
     }
 
     public VoltskiyaModule getModule(String name) {
-        for (VoltskiyaModule module : modules.keySet()) {
+        for (VoltskiyaModule module : modules) {
             if (module.getName().equalsIgnoreCase(name)) return module;
         }
         return null;
     }
 
-    public boolean isLoaded(VoltskiyaModule module) {
-        return modules.get(module);
-    }
-
-    public <T extends VoltskiyaModule> boolean isLoaded(Class<T> moduleClass) {
-        return isLoaded(getModule(moduleClass));
-    }
-
-    public Set<VoltskiyaModule> getModules() {
-        return modules.keySet();
+    public List<VoltskiyaModule> getModules() {
+        return modules;
     }
 
     // Module system end
@@ -166,13 +159,11 @@ public final class Voltskiya extends JavaPlugin {
     private void setupACF() {
         commandManager = new PaperCommandManager(this);
         commandManager.getCommandContexts().registerContext(VoltskiyaModule.class, context -> {
-            String name = context.popFirstArg();
-            for (VoltskiyaModule module : modules.keySet()) {
-                if (module.getName().equalsIgnoreCase(name)) return module;
-            }
-            throw new CommandException("Invalid Module Specified, " + name);
+            VoltskiyaModule module = getModule(context.popFirstArg());
+            if (module != null) return module;
+            throw new CommandException("Invalid Module Specified");
         });
-        commandManager.getCommandCompletions().registerAsyncCompletion("modules", context -> modules.keySet().stream().map(module -> module.getName()).collect(Collectors.toList()));
+        commandManager.getCommandCompletions().registerAsyncCompletion("modules", context -> modules.stream().map(module -> module.getName()).collect(Collectors.toList()));
     }
 
     public PaperCommandManager getCommandManager() {

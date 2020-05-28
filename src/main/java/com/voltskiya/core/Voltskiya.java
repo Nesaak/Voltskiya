@@ -26,11 +26,13 @@ public final class Voltskiya extends JavaPlugin {
     private PaperCommandManager commandManager;
     private List<VoltskiyaModule> loadedModules = new ArrayList();
     private List<VoltskiyaModule> unloadedModules = new ArrayList();
+    private List<String> loadedJars = new ArrayList<>();
 
     @Override
     public void onEnable() {
         instance = this;
         loadDependencies();
+        setupACF();
         setupLuckPerms();
         registerModules();
     }
@@ -42,17 +44,21 @@ public final class Voltskiya extends JavaPlugin {
     // Dynamically load dependencies start
 
     private void loadDependencies() {
+        getLogger().log(Level.INFO, "Starting dynamic dependency loading");
         File dependencies = new File(getDataFolder(), "dependencies");
         if (!dependencies.exists()) dependencies.mkdirs();
         for (File child : dependencies.listFiles()) {
             if (!child.getName().endsWith(".jar")) return;
+            String depend = child.getName().replace(".jar", "");
             try {
-                System.out.println("attempting to load " + child.getName());
                 loadDependency(child);
+                loadedJars.add(depend);
+                getLogger().log(Level.INFO, "Loaded dependency: " + depend);
             } catch (Exception e) {
-                e.printStackTrace();
+                getLogger().log(Level.WARNING, "Failed to load dependency: " + depend);
             }
         }
+        getLogger().log(Level.INFO, "Finished dynamic dependency loading, loaded " + loadedJars.size() + " jars.");
     }
 
     private void loadDependency(File file) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
@@ -60,6 +66,10 @@ public final class Voltskiya extends JavaPlugin {
         method.setAccessible(true);
         URLClassLoader loader = (URLClassLoader) getClass().getClassLoader();
         method.invoke(loader, file.getAbsoluteFile().toURI().toURL());
+    }
+
+    public boolean isLoaded(String dependency) {
+        return loadedJars.contains(dependency);
     }
 
     //Dynamically load dependencies end

@@ -11,6 +11,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @CommandPermission("voltskiya.admin")
 @CommandAlias("voltskiya|volt")
 public class VoltskiyaCommand extends BaseCommand {
@@ -24,14 +27,28 @@ public class VoltskiyaCommand extends BaseCommand {
     }
 
     @Subcommand("modules")
-    public class ModuleCommand {
+    public class ModuleCommand extends BaseCommand {
 
         @Subcommand("list")
         public void list(CommandSender sender) {
-            StringBuilder builder = new StringBuilder();
-            Voltskiya.get().getLoadedJars().forEach(jar -> builder.append(", " + jar));
-            String prettyList = builder.toString().replaceFirst(",", "");
-            sender.sendMessage(ChatColor.GREEN + "Currently loaded modules:" + prettyList);
+            List<VoltskiyaModule> loaded = new ArrayList<>();
+            List<VoltskiyaModule> unloaded = new ArrayList<>();
+            Voltskiya.get().getModules().forEach(module -> {
+                if (Voltskiya.get().isLoaded(module)) {
+                    loaded.add(module);
+                } else {
+                    unloaded.add(module);
+                }
+            });
+            sender.sendMessage(ChatColor.GREEN + "Currently loaded modules:");
+            loaded.forEach(module -> {
+                sender.sendMessage(ChatColor.GREEN + " - " + module.getName());
+            });
+            if (unloaded.size() == 0) return;
+            sender.sendMessage(ChatColor.RED + "Currently unloaded modules:");
+            unloaded.forEach(module -> {
+                sender.sendMessage(ChatColor.RED + " - " + module.getName());
+            });
         }
 
         @CommandCompletion("@modules")

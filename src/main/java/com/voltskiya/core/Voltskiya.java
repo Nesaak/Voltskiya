@@ -15,10 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -138,6 +135,10 @@ public final class Voltskiya extends JavaPlugin {
 
     public <T extends VoltskiyaModule> boolean isLoaded(Class<T> moduleClass) {
         return isLoaded(getModule(moduleClass));
+    }
+
+    public Set<VoltskiyaModule> getModules() {
+        return modules.keySet();
     }
 
     // Module system end

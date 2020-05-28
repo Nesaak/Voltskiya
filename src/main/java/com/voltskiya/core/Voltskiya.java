@@ -19,6 +19,7 @@ public final class Voltskiya extends JavaPlugin {
     private LuckPerms luckPerms;
     private PaperCommandManager commandManager;
     private List<VoltskiyaModule> loadedModules = new ArrayList();
+    private List<VoltskiyaModule> unloadedModules = new ArrayList();
 
     @Override
     public void onEnable() {
@@ -46,17 +47,23 @@ public final class Voltskiya extends JavaPlugin {
             }
             if (module.shouldEnable()) {
                 registerModule(module);
-                getLogger().log(Level.INFO, "Registered Voltskiya Module: " + module.getName());
             } else {
-                getLogger().log(Level.WARNING, "Voltskiya Module Did Not Load: " + module.getName());
+                failedRegisterModule(module);
             }
         });
         getLogger().log(Level.INFO, "Loaded " + loadedModules.size() + " Voltskiya modules.");
+        getLogger().log(Level.INFO, "Failed to load " + unloadedModules.size() + " Voltskiya modules.");
     }
 
     private void registerModule(VoltskiyaModule module) {
         module.startModule();
         loadedModules.add(module);
+        getLogger().log(Level.INFO, "Registered Voltskiya Module: " + module.getName());
+    }
+
+    private void failedRegisterModule(VoltskiyaModule module) {
+        unloadedModules.add(module);
+        getLogger().log(Level.WARNING, "Voltskiya Module Did Not Load: " + module.getName());
     }
 
     private <T extends VoltskiyaModule> T getModule(Class<T> module) {

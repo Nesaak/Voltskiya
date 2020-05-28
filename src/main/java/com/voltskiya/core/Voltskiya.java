@@ -44,7 +44,12 @@ public final class Voltskiya extends JavaPlugin {
                 e.printStackTrace();
                 return;
             }
-            registerModule(module);
+            if (module.shouldEnable()) {
+                registerModule(module);
+                getLogger().log(Level.INFO, "Registered Voltskiya Module: " + module.getName());
+            } else {
+                getLogger().log(Level.WARNING, "Voltskiya Module Did Not Load: " + module.getName());
+            }
         });
         getLogger().log(Level.INFO, "Loaded " + loadedModules.size() + " Voltskiya modules.");
     }
@@ -52,7 +57,6 @@ public final class Voltskiya extends JavaPlugin {
     private void registerModule(VoltskiyaModule module) {
         module.startModule();
         loadedModules.add(module);
-        getLogger().log(Level.INFO, "Registered Voltskiya Module: " + module.getName());
     }
 
     private <T extends VoltskiyaModule> T getModule(Class<T> module) {

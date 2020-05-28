@@ -6,4 +6,8 @@ public interface VoltskiyaModule {
 
     String getName();
 
+    default boolean shouldEnable() {
+        return true;
+    }
+
 }

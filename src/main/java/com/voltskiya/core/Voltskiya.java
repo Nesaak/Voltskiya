@@ -8,6 +8,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public final class Voltskiya extends JavaPlugin {
@@ -16,6 +18,7 @@ public final class Voltskiya extends JavaPlugin {
 
     private LuckPerms luckPerms;
     private PaperCommandManager commandManager;
+    private List<VoltskiyaModule> loadedModules = new ArrayList();
 
     @Override
     public void onEnable() {
@@ -43,9 +46,12 @@ public final class Voltskiya extends JavaPlugin {
             }
             registerModule(module);
         });
+        getLogger().log(Level.INFO, "Loaded " + loadedModules.size() + " Voltskiya modules.");
     }
 
     public void registerModule(VoltskiyaModule module) {
+        module.startModule();
+        loadedModules.add(module);
         getLogger().log(Level.INFO, "Registered Voltskiya Module: " + module.getName());
     }
 

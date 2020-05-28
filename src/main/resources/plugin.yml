@@ -1,0 +1,5 @@
+name: Voltskiya
+version: ${project.version}
+main: com.voltskiya.core.Voltskiya
+api-version: 1.15
+authors: [Nesaak, appleptr16]

@@ -55,10 +55,10 @@ public final class Voltskiya extends JavaPlugin {
         getLogger().log(Level.INFO, "Registered Voltskiya Module: " + module.getName());
     }
 
-    private VoltskiyaModule getModule(Class<VoltskiyaModule> module) {
+    private <T extends VoltskiyaModule> T getModule(Class<T> module) {
         for (VoltskiyaModule loadedModule : loadedModules) {
            if (loadedModule.getClass().isInstance(module)) {
-               return loadedModule;
+               return (T) loadedModule;
            }
         }
         return null;

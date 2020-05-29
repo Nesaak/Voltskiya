@@ -23,8 +23,7 @@ public class TemperaturesModule extends VoltskiyaModule {
         ActionBar.initialize(plugin);
         IsWetCheck.initialize(plugin);
         new PlayerListener(plugin);
-        new TemperaturesReload(plugin);
-        Voltskiya.get().getCommandManager().registerCommand(new TemperaturesDestroyCommand());
+        Voltskiya.get().getCommandManager().registerCommand(new TemperatureCommands());
     }
 
     @Override

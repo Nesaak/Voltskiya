@@ -1,6 +1,7 @@
 package com.voltskiya.core.admin;
 
 import co.aikar.commands.BaseCommand;
+import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
@@ -8,7 +9,6 @@ import co.aikar.commands.annotation.Subcommand;
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.VoltskiyaModule;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class VoltskiyaCommand extends BaseCommand {
         @Subcommand("enable")
         public void enable(CommandSender sender, VoltskiyaModule module) {
             if (module.isEnabled()) {
-                throw new CommandException("That module is already enabled.");
+                throw new InvalidCommandArgument("That module is already enabled.");
             }
             Voltskiya.get().enableModule(module);
         }

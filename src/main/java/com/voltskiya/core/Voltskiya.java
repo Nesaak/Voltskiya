@@ -4,7 +4,6 @@ import co.aikar.commands.PaperCommandManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandException;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -15,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -49,16 +49,22 @@ public final class Voltskiya extends JavaPlugin {
         getLogger().log(Level.INFO, "Starting dynamic dependency loading");
         File dependencies = new File(getDataFolder(), "dependencies");
         if (!dependencies.exists()) dependencies.mkdirs();
-        for (File child : dependencies.listFiles()) {
-            if (!child.getName().endsWith(".jar")) return;
-            String depend = child.getName().replace(".jar", "");
-            try {
-                loadDependency(child);
-                loadedJars.add(depend);
-                getLogger().log(Level.INFO, "Loaded dependency: " + depend);
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING, "Failed to load dependency: " + depend);
-            }
+        try {
+            Files.walk(dependencies.toPath()).forEach(childPath -> {
+                File child = childPath.toFile();
+                if (!child.getName().endsWith(".jar")) return;
+                String depend = child.getName().replace(".jar", "");
+                try {
+                    loadDependency(child);
+                    loadedJars.add(depend);
+                    getLogger().log(Level.INFO, "Loaded dependency: " + depend);
+                } catch (Exception e) {
+                    getLogger().log(Level.WARNING, "Failed to load dependency: " + depend);
+                }
+            });
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Unexpected issue occurred while loading dependencies.");
+            e.printStackTrace();
         }
         getLogger().log(Level.INFO, "Finished dynamic dependency loading, loaded " + loadedJars.size() + " jars.");
     }
@@ -96,6 +102,8 @@ public final class Voltskiya extends JavaPlugin {
             registerModule(module);
             if (module.shouldEnable()) {
                 enableModule(module);
+            } else {
+                getLogger().log(Level.WARNING, "Failed to enable Voltskiya Module " + module.getName());
             }
         });
         getLogger().log(Level.INFO, "Loaded " + modules.stream().filter(module -> module.isEnabled()).collect(Collectors.toList()).size() + " Voltskiya modules.");
@@ -105,7 +113,6 @@ public final class Voltskiya extends JavaPlugin {
     private void registerModule(VoltskiyaModule module) {
         modules.add(module);
         module.setEnabled(false);
-        getLogger().log(Level.WARNING, "Registered Voltskiya Module " + module.getName());
     }
 
     public void enableModule(VoltskiyaModule module) {
@@ -159,12 +166,6 @@ public final class Voltskiya extends JavaPlugin {
 
     private void setupACF() {
         commandManager = new PaperCommandManager(this);
-        commandManager.getCommandContexts().registerContext(VoltskiyaModule.class, context -> {
-            VoltskiyaModule module = getModule(context.popFirstArg());
-            if (module != null) return module;
-            throw new CommandException("Invalid Module Specified");
-        });
-        commandManager.getCommandCompletions().registerAsyncCompletion("modules", context -> modules.stream().map(module -> module.getName()).collect(Collectors.toList()));
     }
 
     public PaperCommandManager getCommandManager() {

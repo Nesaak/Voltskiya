@@ -20,9 +20,8 @@ public abstract class VoltskiyaModule {
         return true;
     }
 
-
     protected void setEnabled(boolean enabled) {
-        isEnabled = isEnabled;
+        isEnabled = enabled;
     }
 
     public boolean isEnabled() {

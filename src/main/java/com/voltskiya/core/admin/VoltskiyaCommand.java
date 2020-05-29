@@ -34,7 +34,7 @@ public class VoltskiyaCommand extends BaseCommand {
             List<VoltskiyaModule> loaded = new ArrayList<>();
             List<VoltskiyaModule> unloaded = new ArrayList<>();
             Voltskiya.get().getModules().forEach(module -> {
-                if (Voltskiya.get().isLoaded(module)) {
+                if (module.isEnabled()) {
                     loaded.add(module);
                 } else {
                     unloaded.add(module);
@@ -54,10 +54,10 @@ public class VoltskiyaCommand extends BaseCommand {
         @CommandCompletion("@modules")
         @Subcommand("enable")
         public void enable(CommandSender sender, VoltskiyaModule module) {
-            if (Voltskiya.get().isLoaded(module)) {
+            if (module.isEnabled()) {
                 throw new CommandException("That module is already enabled.");
             }
-            Voltskiya.get().loadModule(module);
+            Voltskiya.get().enableModule(module);
         }
 
     }

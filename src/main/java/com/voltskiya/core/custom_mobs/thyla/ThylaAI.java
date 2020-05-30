@@ -65,7 +65,7 @@ public class ThylaAI {
         synchronized (thylaWasHitSync) {
             thylaWashit.remove(thyla.getUniqueId());
         }
-        if (thyla.isDead()) {
+        if (!thyla.isValid()) {
             return;
         }
         Location entityLocation = thyla.getLocation();

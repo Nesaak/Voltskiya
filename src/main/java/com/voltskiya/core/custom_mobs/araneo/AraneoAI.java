@@ -24,7 +24,7 @@ public class AraneoAI {
     }
 
     private void doCheckSight() {
-        if (araneo.isDead()) return;
+        if (!araneo.isValid()) return;
         @Nullable LivingEntity target = araneo.getTarget();
         if (target != null) {
             // we see someone!

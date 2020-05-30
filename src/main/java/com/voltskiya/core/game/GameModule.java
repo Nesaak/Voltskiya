@@ -8,6 +8,7 @@ import com.voltskiya.core.game.enchantImmunity.ImmunityMain;
 import com.voltskiya.core.game.mobGear.EquipMain;
 import com.voltskiya.core.game.noDamage.NoDamageMain;
 import com.voltskiya.core.game.noRegen.NoRegenMain;
+import com.voltskiya.core.game.powertool.PowerToolMain;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GameModule extends VoltskiyaModule {
@@ -20,6 +21,7 @@ public class GameModule extends VoltskiyaModule {
         EquipMain.enable(plugin);
         NoDamageMain.enable(plugin);
         NoRegenMain.enable(plugin, getDataFolder());
+        PowerToolMain.enable(plugin);
     }
 
     @Override

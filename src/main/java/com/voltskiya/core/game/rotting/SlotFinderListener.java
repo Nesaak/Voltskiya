@@ -11,7 +11,7 @@ class SlotFinderListener implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void slotFinder(InventoryClickEvent event) {
         System.out.println(event.getSlot());
     }

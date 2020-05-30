@@ -34,7 +34,7 @@ class RegenListener implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
@@ -42,7 +42,7 @@ class RegenListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onRegen(EntityRegainHealthEvent event) {
         if (event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED ||
                 event.getRegainReason() == EntityRegainHealthEvent.RegainReason.EATING ||

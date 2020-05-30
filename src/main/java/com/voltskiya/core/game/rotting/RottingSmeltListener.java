@@ -19,7 +19,7 @@ class RottingSmeltListener implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onSmeltEvent(FurnaceSmeltEvent event) {
         ItemStack result = event.getResult();
         @NotNull BlockState furnaceBlock = event.getBlock().getState();

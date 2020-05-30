@@ -60,7 +60,7 @@ public class RespawnListener implements Listener {
 
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onRespawn(PlayerRespawnEvent event) {
         if (event.getPlayer().getBedSpawnLocation() == null) {
             int choose = (int) (spawnCoords.size() * random.nextDouble());

@@ -24,7 +24,7 @@ public class CoolerPlaceListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent event) {
         ItemStack item = event.getItemInHand();
         if (item == null || item.getType() != Material.CHEST)

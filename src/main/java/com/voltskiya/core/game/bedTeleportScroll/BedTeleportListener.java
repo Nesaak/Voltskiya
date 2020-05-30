@@ -91,7 +91,7 @@ public class BedTeleportListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerDamaged(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         synchronized (teleportationsSync) {
@@ -99,7 +99,7 @@ public class BedTeleportListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onTeleport(PlayerInteractEvent event) {
         @NotNull Action action = event.getAction();
         if (action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) {
@@ -132,7 +132,7 @@ public class BedTeleportListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDrop(PlayerDropItemEvent event) {
         synchronized (teleportationsSync) {
             teleportations.remove(event.getPlayer().getUniqueId());

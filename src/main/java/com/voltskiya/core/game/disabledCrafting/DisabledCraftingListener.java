@@ -24,7 +24,7 @@ public class DisabledCraftingListener implements Listener {
         disabled.add(Material.DRIED_KELP);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getClickedInventory();
         if (inventory == null) {

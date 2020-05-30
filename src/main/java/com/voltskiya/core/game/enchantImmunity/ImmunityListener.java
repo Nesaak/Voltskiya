@@ -26,7 +26,7 @@ class ImmunityListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event) {
         @NotNull Set<String> tags = event.getEntity().getScoreboardTags();
         if (tags.contains(BANE_TAG)) {

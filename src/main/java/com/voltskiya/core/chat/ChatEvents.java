@@ -14,7 +14,7 @@ import static org.bukkit.ChatColor.*;
 
 public class ChatEvents implements Listener {
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onChat(AsyncPlayerChatEvent event) {
         event.setCancelled(true);
         chat(event.getPlayer(), event.getMessage());
@@ -29,12 +29,12 @@ public class ChatEvents implements Listener {
         Bukkit.getConsoleSender().sendMessage(finalMessage);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(DARK_GREEN + "[" + GREEN + "+" + DARK_GREEN + "] " + RESET + UserUtil.getDisplayName(event.getPlayer()));
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onLeave(PlayerQuitEvent event) {
         event.setQuitMessage(DARK_RED + "[" + RED + "+" + DARK_RED+ "] " + RESET + UserUtil.getDisplayName(event.getPlayer()));
     }

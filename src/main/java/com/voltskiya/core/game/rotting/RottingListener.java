@@ -32,7 +32,7 @@ class RottingListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
         if (event.getInventory() instanceof AnvilInventory) {
             return;
@@ -45,25 +45,25 @@ class RottingListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
         if (RottingDecrement.openInventories.containsKey(event.getInventory())) {
             RottingDecrement.openInventories.put(event.getInventory(), RottingDecrement.openInventories.get(event.getInventory()) - 1);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         RottingDecrement.openInventories.put(event.getPlayer().getInventory(), 1);
         RottingDecrement.dealWithOpenInventory(event.getPlayer().getInventory(), plugin, true);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerLeave(PlayerQuitEvent event) {
         RottingDecrement.openInventories.remove(event.getPlayer().getInventory());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onInventoryMove(InventoryMoveItemEvent event) {
         InventoryHolder initiator = event.getInitiator().getHolder();
         if (initiator instanceof Hopper) {
@@ -89,7 +89,7 @@ class RottingListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onHopperPickup(InventoryPickupItemEvent event) {
         // deal with a hopper picking up an item
         int left = RottingMerge.shiftMove(event.getInventory(), event.getItem().getItemStack());
@@ -107,7 +107,7 @@ class RottingListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityPickup(EntityPickupItemEvent event) {
         if (event.getEntity() instanceof Player) {
             // deal with an entity picking up an entity

@@ -23,7 +23,7 @@ class DamageListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageEvent e) {
         Entity entity = e.getEntity();
         EntityDamageEvent.DamageCause cause = e.getCause();

@@ -12,7 +12,7 @@ class EquipListener implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void equip(EntityPickupItemEvent e) {
         if (!(e.getEntity() instanceof Player)) {
             e.setCancelled(true);

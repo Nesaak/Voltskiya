@@ -19,7 +19,7 @@ class RenameListener implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         // check if the event has been cancelled by another plugin
         if (!event.isCancelled()) {

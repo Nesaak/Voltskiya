@@ -19,7 +19,7 @@ public class ThylaSpawnOrHitListener implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler(priority = EventPriority.LOW) // let other people cancel it if needed
+    @EventHandler(priority = EventPriority.HIGH,ignoreCancelled = true) // let other people cancel it if needed
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         Entity entity = event.getEntity();
         Set<String> tags = entity.getScoreboardTags();
@@ -27,7 +27,7 @@ public class ThylaSpawnOrHitListener implements Listener {
             ThylaAI.makeThyla((Mob)entity);
         }
     }
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityHit(EntityDamageEvent event){
         Entity entity = event.getEntity();
         Set<String> tags = entity.getScoreboardTags();

@@ -18,7 +18,7 @@ public class AraneoSpawnListener implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onAraneoSpawn(CreatureSpawnEvent event) {
         @NotNull LivingEntity entity = event.getEntity();
         @NotNull Set<String> tags = entity.getScoreboardTags();

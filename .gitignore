@@ -1,12 +1,31 @@
-# Ignore Gradle project-specific cache directory
-.gradle
+# Compiled class file
+*.class
 
-# Ignore Gradle build output directory
+# Log file
+*.log
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# intelliJ impl #
+*.iml
+
+# Workspace #
+target
+.idea
+pom.xml
+
+
+# Ignore Gradle
+.gradle
 build
-/build.gradle
 /gradlew
 /gradlew.bat
-/settings.gradle
 /libs/
 /gradle/
-/.idea/

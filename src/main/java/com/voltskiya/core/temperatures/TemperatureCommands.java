@@ -13,15 +13,22 @@ import com.voltskiya.core.temperatures.constants.biomes.NavigateBiomes;
 import com.voltskiya.core.temperatures.constants.results.NavigateResults;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 @CommandAlias("temperature")
 public class TemperatureCommands extends BaseCommand {
+    private File dataFolder;
+
+    public TemperatureCommands(File dataFolder) {
+        this.dataFolder = dataFolder;
+    }
+
     @Subcommand("remove")
     public boolean remove(@NotNull CommandSender commandSender, @Single String playerName) {
         Player player = Bukkit.getPlayer(playerName);
@@ -39,12 +46,12 @@ public class TemperatureCommands extends BaseCommand {
     @Subcommand("reload")
     public boolean reload(@NotNull CommandSender commandSender) {
         JavaPlugin plugin = Voltskiya.get();
-        NavigatePlayers.initialize(plugin);
-        NavigateBiomes.initialize(plugin);
-        NavigateBlocks.initialize(plugin);
-        NavigateArmor.initialize(plugin);
-        NavigatePotions.initialize(plugin);
-        NavigateResults.initialize(plugin);
+        NavigatePlayers.initialize(plugin, dataFolder);
+        NavigateBiomes.initialize(dataFolder);
+        NavigateBlocks.initialize(dataFolder);
+        NavigateArmor.initialize(dataFolder);
+        NavigatePotions.initialize(dataFolder);
+        NavigateResults.initialize(dataFolder);
         return true;
     }
 }

@@ -16,17 +16,9 @@ public class NavigateBlocks {
     private static final String BLOCKS_PATH = "blockTemperatures.yml";
     public static Map<Material, Double> blockToTemp;
 
-    public static void initialize(JavaPlugin plugin) {
+    public static void initialize(File dataFolder) {
         blockToTemp = new HashMap<>();
-        File file = new File(plugin.getDataFolder().toString());
-        if (!file.exists()) {
-            if (!file.mkdir()) {
-                System.err.println(String.format("%s There was an error making the root temperatures folder", NavigatePlayers.PLUGIN_NAME));
-                return;
-            }
-        }
-
-        file = new File(plugin.getDataFolder() + File.separator + BLOCKS_PATH);
+        File file = new File(dataFolder + File.separator + BLOCKS_PATH);
         if (!file.exists()) {
             try {
                 boolean success = file.createNewFile();

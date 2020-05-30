@@ -18,18 +18,10 @@ public class NavigatePotions {
     public static Map<PotionEffectType, Double> potionToModifierHeat;
     public static Map<PotionEffectType, Double> potionToModifierCold;
 
-    public static void initialize(JavaPlugin plugin) {
+    public static void initialize(File dataFolder) {
         potionToModifierHeat = new HashMap<>();
         potionToModifierCold = new HashMap<>();
-        File file = new File(plugin.getDataFolder().toString());
-        if (!file.exists()) {
-            if (!file.mkdir()) {
-                System.err.println(String.format("%s There was an error making the root temperatures folder", NavigatePlayers.PLUGIN_NAME));
-                return;
-            }
-        }
-
-        file = new File(plugin.getDataFolder() + File.separator + POTIONS_PATH);
+        File file = new File(dataFolder + File.separator + POTIONS_PATH);
         if (!file.exists()) {
             try {
                 boolean success = file.createNewFile();

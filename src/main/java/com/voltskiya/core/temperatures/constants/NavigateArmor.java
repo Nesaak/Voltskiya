@@ -18,18 +18,10 @@ public class NavigateArmor {
     public static Map<Material, Double> heatArmorToModifier;
     public static Map<Material, Double> coldArmorToModifier;
 
-    public static void initialize(JavaPlugin plugin) {
+    public static void initialize(File dataFolder) {
         heatArmorToModifier = new HashMap<>();
         coldArmorToModifier = new HashMap<>();
-        File file = new File(plugin.getDataFolder().toString());
-        if (!file.exists()) {
-            if (!file.mkdir()) {
-                System.err.println(String.format("%s There was an error making the root temperatures folder", NavigatePlayers.PLUGIN_NAME));
-                return;
-            }
-        }
-
-        file = new File(plugin.getDataFolder() + File.separator + ARMOR_PATH);
+        File file = new File(dataFolder + File.separator + ARMOR_PATH);
         if (!file.exists()) {
             try {
                 boolean success = file.createNewFile();

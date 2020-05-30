@@ -32,7 +32,7 @@ public class NavigatePlayers {
     public static TextComponent veryColdMessage;
     public static TextComponent normalContinuedMessage;
 
-    public static void initialize(JavaPlugin plugin) {
+    public static void initialize(JavaPlugin plugin, File dataFolder) {
         TEMPERATURE = new NamespacedKey(plugin, "current-temperature");
         LAST_WET = new NamespacedKey(plugin, "last-wet");
 
@@ -60,15 +60,7 @@ public class NavigatePlayers {
         veryColdMessage.setColor(ChatColor.DARK_BLUE);
         veryColdMessage.setText("You're freezing! Find some warmth, quickly! (%d\u00B0C)");
 
-        File file = new File(plugin.getDataFolder().toString());
-        if (!file.exists()) {
-            if (!file.mkdir()) {
-                System.err.println(String.format("%s There was an error making the root temperatures folder", NavigatePlayers.PLUGIN_NAME));
-                return;
-            }
-        }
-
-        file = new File(plugin.getDataFolder() + File.separator + CONFIG_PATH);
+        File file = new File(dataFolder + File.separator + CONFIG_PATH);
         if (!file.exists()) {
             try {
                 boolean success = file.createNewFile();

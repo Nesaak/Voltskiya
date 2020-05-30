@@ -16,17 +16,9 @@ public class NavigateResults {
     private static final String RESULTS_YML = "results.yml";
     public static Map<Integer, TemperatureResult> tempToResult;
 
-    public static void initialize(JavaPlugin plugin) {
+    public static void initialize(File dataFolder) {
         tempToResult = new HashMap<>();
-        File file = new File(plugin.getDataFolder().toString());
-        if (!file.exists()) {
-            if (!file.mkdir()) {
-                System.err.println(String.format("%s There was an error making the root temperatures folder", NavigatePlayers.PLUGIN_NAME));
-                return;
-            }
-        }
-
-        file = new File(plugin.getDataFolder() + File.separator + RESULTS_YML);
+        File file = new File(dataFolder + File.separator + RESULTS_YML);
         if (!file.exists()) {
             try {
                 boolean success = file.createNewFile();

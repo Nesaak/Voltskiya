@@ -12,8 +12,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
@@ -229,14 +231,8 @@ public class ThylaAI {
         y /= checks;
         z /= checks;
         Vector direction = new Vector(x, y, z);
-        int totalChecks = checks * 3;
-        for (int i = 0; i < totalChecks; i++) {
-            spot2 = spot2.add(direction);
-            if (world.getBlockAt(spot2.getBlockX(), spot2.getBlockY(), spot2.getBlockZ()).getBlockData().getMaterial().isOccluding()) {
-                return true;
-            }
-        }
-        return false;
+        @Nullable RayTraceResult trace = world.rayTraceBlocks(new Location(world, spot2.getX(), spot2.getY(), spot2.getZ()), direction, 3);
+        return trace != null;
     }
 
     public static void countHit(UUID uniqueId, long currentTimeMillis) {

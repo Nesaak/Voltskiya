@@ -3,7 +3,7 @@ package com.voltskiya.core.custom_mobs;
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.VoltskiyaModule;
 import com.voltskiya.core.custom_mobs.araneo.AraneoMain;
-import com.voltskiya.core.custom_mobs.better_spider_spawn.BetterSpiderSpwnMain;
+import com.voltskiya.core.custom_mobs.better_spider_spawn.BetterSpiderSpawnMain;
 import com.voltskiya.core.custom_mobs.thyla.ThylaMain;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,7 +16,7 @@ public class CustomMobsModule extends VoltskiyaModule {
         JavaPlugin plugin = Voltskiya.get();
 
         ThylaMain.enable(plugin, dataFolder);
-        BetterSpiderSpwnMain.enable(plugin);
+        BetterSpiderSpawnMain.enable(plugin);
         AraneoMain.enable(plugin);
     }
 

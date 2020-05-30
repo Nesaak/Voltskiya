@@ -5,7 +5,7 @@ import com.voltskiya.core.VoltskiyaModule;
 import com.voltskiya.core.game.bedTeleportScroll.BedTeleportMain;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class VoltskiyaAppleMain extends VoltskiyaModule {
+public class GameModule extends VoltskiyaModule {
     @Override
     public void enabled() {
         JavaPlugin plugin = Voltskiya.get();
@@ -14,6 +14,6 @@ public class VoltskiyaAppleMain extends VoltskiyaModule {
 
     @Override
     public String getName() {
-        return null;
+        return "Game";
     }
 }

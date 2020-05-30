@@ -5,6 +5,7 @@ import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.VoltskiyaModule;
 import com.voltskiya.core.temperatures.constants.NavigateArmor;
 import com.voltskiya.core.temperatures.constants.NavigateBlocks;
+import com.voltskiya.core.temperatures.constants.NavigatePlayers;
 import com.voltskiya.core.temperatures.constants.NavigatePotions;
 import com.voltskiya.core.temperatures.constants.biomes.NavigateBiomes;
 import com.voltskiya.core.temperatures.constants.results.NavigateResults;
@@ -17,6 +18,7 @@ public class TemperaturesModule extends VoltskiyaModule {
     public void enabled() {
         JavaPlugin plugin = Voltskiya.get();
         final File dataFolder = getDataFolder();
+        NavigatePlayers.initialize(plugin, dataFolder);
         NavigateBiomes.initialize(dataFolder);
         NavigateBlocks.initialize(dataFolder);
         NavigateArmor.initialize(dataFolder);

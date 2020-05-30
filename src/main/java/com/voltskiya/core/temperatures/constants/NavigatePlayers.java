@@ -77,7 +77,7 @@ public class NavigatePlayers {
         YamlConfiguration configOrig = YamlConfiguration.loadConfiguration(file);
 
         TEMPERATURE_CHANGE_RATE = configOrig.getDouble(TEMPERATURE_CHANGE_RATE_PATH);
-        CHECK_TIME = configOrig.getInt(CHECK_TIME_PATH);
+        CHECK_TIME = Math.max(5, configOrig.getInt(CHECK_TIME_PATH)); // make it so you can't crash your server if this is empty
         BLOCK_IMPACT_DISTANCE = configOrig.getInt(BLOCK_IMPACT_DISTANCE_PATH);
         LOGIN_DELAY = configOrig.getInt(LOGIN_DELAY_PATH);
     }

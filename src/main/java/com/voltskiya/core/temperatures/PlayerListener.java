@@ -20,25 +20,23 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerListener implements Listener {
     private final JavaPlugin plugin;
 
-    private final Map<UUID, WatchPlayer> watching = new HashMap<>();
-    private final Object watchingSyncObject = new Object();
+    private final Map<UUID, WatchPlayer> watching = new ConcurrentHashMap<>();
 
     public PlayerListener(JavaPlugin plugin) {
         this.plugin = plugin;
         for (Player player : Bukkit.getOnlinePlayers()) {
             UUID uid = player.getUniqueId();
-            synchronized (watchingSyncObject) {
-                if (watching.containsKey(uid)) {
-                    if (watching.get(uid).done) {
-                        watching.put(uid, new WatchPlayer(uid, plugin));
-                    }
-                } else {
+            if (watching.containsKey(uid)) {
+                if (watching.get(uid).done) {
                     watching.put(uid, new WatchPlayer(uid, plugin));
                 }
+            } else {
+                watching.put(uid, new WatchPlayer(uid, plugin));
             }
         }
 
@@ -48,14 +46,12 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         UUID uid = event.getPlayer().getUniqueId();
-        synchronized (watchingSyncObject) {
-            if (watching.containsKey(uid)) {
-                if (watching.get(uid).done) {
-                    watching.put(uid, new WatchPlayer(uid, plugin));
-                }
-            } else {
+        if (watching.containsKey(uid)) {
+            if (watching.get(uid).done) {
                 watching.put(uid, new WatchPlayer(uid, plugin));
             }
+        } else {
+            watching.put(uid, new WatchPlayer(uid, plugin));
         }
     }
 

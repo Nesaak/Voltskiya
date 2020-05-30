@@ -2,6 +2,7 @@ package com.voltskiya.core.temperatures;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import com.voltskiya.core.Voltskiya;
@@ -30,12 +31,8 @@ public class TemperatureCommands extends BaseCommand {
     }
 
     @Subcommand("remove")
-    public boolean remove(@NotNull CommandSender commandSender, @Single String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
-        if (player == null) {
-            commandSender.sendMessage("That player does not exist right now.");
-            return false;
-        }
+    @CommandCompletion("@players")
+    public boolean remove(@NotNull CommandSender commandSender, @Single Player player) {
         @NotNull PersistentDataContainer container = player.getPersistentDataContainer();
         container.remove(NavigatePlayers.TEMPERATURE);
         container.remove(NavigatePlayers.LAST_WET);

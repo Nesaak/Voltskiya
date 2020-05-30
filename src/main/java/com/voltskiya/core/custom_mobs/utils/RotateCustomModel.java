@@ -24,7 +24,5 @@ public class RotateCustomModel {
             entity.teleport(location);
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> RotateCustomModel.rotate(entities, center, plugin), 2);
-
-
     }
 }

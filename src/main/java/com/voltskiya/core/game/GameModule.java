@@ -9,6 +9,7 @@ import com.voltskiya.core.game.mobGear.EquipMain;
 import com.voltskiya.core.game.noDamage.NoDamageMain;
 import com.voltskiya.core.game.noRegen.NoRegenMain;
 import com.voltskiya.core.game.powertool.PowerToolMain;
+import com.voltskiya.core.game.respawn.RespawnMain;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GameModule extends VoltskiyaModule {
@@ -22,6 +23,7 @@ public class GameModule extends VoltskiyaModule {
         NoDamageMain.enable(plugin);
         NoRegenMain.enable(plugin, getDataFolder());
         PowerToolMain.enable(plugin);
+        RespawnMain.enable(plugin,getDataFolder());
     }
 
     @Override

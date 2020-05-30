@@ -4,6 +4,7 @@ import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.VoltskiyaModule;
 import com.voltskiya.core.game.bedTeleportScroll.BedTeleportMain;
 import com.voltskiya.core.game.disabledCrafting.DisabledCraftingMain;
+import com.voltskiya.core.game.enchantImmunity.ImmunityMain;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GameModule extends VoltskiyaModule {
@@ -12,6 +13,7 @@ public class GameModule extends VoltskiyaModule {
         JavaPlugin plugin = Voltskiya.get();
         BedTeleportMain.enable(plugin);
         DisabledCraftingMain.enable(plugin);
+        ImmunityMain.enable(plugin);
     }
 
     @Override

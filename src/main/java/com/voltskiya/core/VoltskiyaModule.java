@@ -29,7 +29,9 @@ public abstract class VoltskiyaModule {
     }
 
     public File getDataFolder() {
-        return new File(Voltskiya.get().getDataFolder(), getName().toLowerCase());
+        File dataFolder = new File(Voltskiya.get().getDataFolder(), getName().toLowerCase());
+        if (!dataFolder.exists()) dataFolder.mkdir();
+        return dataFolder;
     }
 
     @Override

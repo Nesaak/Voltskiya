@@ -20,15 +20,17 @@ public class RottingMain {
     public static NamespacedKey cooler;
     public static NamespacedKey vanilla;
     private static JavaPlugin plugin;
+    private static File dataFolder;
     public static HashSet<InventoryType> furanceTypes;
 
-    public static void enable(JavaPlugin pl) {
+    public static void enable(JavaPlugin pl, File folder) {
         furanceTypes = new HashSet<>();
         furanceTypes.add(InventoryType.FURNACE);
         furanceTypes.add(InventoryType.BLAST_FURNACE);
         furanceTypes.add(InventoryType.SMOKER);
 
         plugin = pl;
+        dataFolder = folder;
         IsRottable.initialize();
         getChart();
         lastCheckedKey = new NamespacedKey(pl, TagsNavigate.LAST_CHECKED);
@@ -43,28 +45,28 @@ public class RottingMain {
 
 //        new SlotFinderListener(pl);
 
-        System.out.println("[VoltskiyaApple] [Rotting] enabled");
+        System.out.println("[Voltskiya] [Game] [Rotting] enabled");
     }
 
     private static void getChart() {
         rottingChart = new HashMap<>();
         rotIntoChart = new HashMap<>();
 
-        File file = new File(String.format("%s%s%s", plugin.getDataFolder(), File.separator, TagsNavigate.ROTTING_DIR));
+        File file = new File(String.format("%s%s%s", dataFolder, File.separator, TagsNavigate.ROTTING_DIR));
         if (!file.exists())
             if (!file.mkdir()) {
-                System.err.println("[VoltskiyaApple] [Rotting] Could not make the directory for rotting");
+                System.err.println("[Voltskiya] [Game] [Rotting] Could not make the directory for rotting");
                 return;
             }
-        file = new File(String.format("%s%s%s%s%s%s", plugin.getDataFolder(), File.separator, TagsNavigate.ROTTING_DIR, File.separator, TagsNavigate.ROTTING_CHART, ".yml"));
+        file = new File(String.format("%s%s%s%s%s%s", dataFolder, File.separator, TagsNavigate.ROTTING_DIR, File.separator, TagsNavigate.ROTTING_CHART, ".yml"));
         if (!file.exists())
             try {
                 if (!file.createNewFile()) {
-                    System.err.println("[VoltskiyaApple] [Rotting] Could not make the rotting chart file");
+                    System.err.println("[Voltskiya] [Game] [Rotting] Could not make the rotting chart file");
                     return;
                 }
             } catch (IOException e) {
-                System.err.println("[VoltskiyaApple] [Rotting] Could not make the rotting chart file");
+                System.err.println("[Voltskiya] [Game] [Rotting] Could not make the rotting chart file");
                 return;
             }
         YamlConfiguration configOrig = YamlConfiguration.loadConfiguration(file);
@@ -80,15 +82,15 @@ public class RottingMain {
             long decayRate = config.getLong(key);
             rottingChart.put(key, decayRate);
         }
-        file = new File(String.format("%s%s%s%s%s%s", plugin.getDataFolder(), File.separator, TagsNavigate.ROTTING_DIR, File.separator, TagsNavigate.ROT_INTO_CHART, ".yml"));
+        file = new File(String.format("%s%s%s%s%s%s", dataFolder, File.separator, TagsNavigate.ROTTING_DIR, File.separator, TagsNavigate.ROT_INTO_CHART, ".yml"));
         if (!file.exists())
             try {
                 if (!file.createNewFile()) {
-                    System.err.println("[VoltskiyaApple] [Rotting] Could not make the rot-into chart file");
+                    System.err.println("[Voltskiya] [Game] [Rotting] Could not make the rot-into chart file");
                     return;
                 }
             } catch (IOException e) {
-                System.err.println("[VoltskiyaApple] [Rotting] Could not make the rot-into chart file");
+                System.err.println("[Voltskiya] [Game] [Rotting] Could not make the rot-into chart file");
                 return;
             }
         configOrig = YamlConfiguration.loadConfiguration(file);

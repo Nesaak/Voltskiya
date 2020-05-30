@@ -24,7 +24,7 @@ public class RottingMerge implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOW)
     public void onInventoryClick(InventoryClickEvent event) {
         ClickType type = event.getClick();
         ItemStack cursorItem = event.getCursor();

@@ -1,5 +1,6 @@
 package com.voltskiya.core.custom_mobs.thyla;
 
+import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.custom_mobs.utils.BoundingBoxUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -35,7 +36,8 @@ public class ThylaAI {
     private static final Object thylaWasHitSync = new Object();
     private static final HashMap<UUID, Long> thylaWashit = new HashMap<>();
 
-    public static void initialize(File dataFolder) {
+    public static void initialize(JavaPlugin pl, File dataFolder) {
+        plugin = pl;
         YamlConfiguration configOrig = YamlConfiguration.loadConfiguration(new File(dataFolder + File.separator + THYLA_FOLDER + File.separator + THYLA_CONFIG));
         ConfigurationSection config = configOrig.getConfigurationSection(THYLA_PATH);
         if (config == null) {

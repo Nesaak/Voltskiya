@@ -6,7 +6,7 @@ import java.io.File;
 
 public class ThylaMain {
     public static void enable(JavaPlugin plugin, File dataFolder) {
-        ThylaAI.initialize(dataFolder);
+        ThylaAI.initialize(plugin, dataFolder);
         new ThylaSpawnOrHitListener(plugin);
     }
 }

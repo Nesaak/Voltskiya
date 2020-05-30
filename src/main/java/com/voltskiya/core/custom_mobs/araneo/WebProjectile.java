@@ -144,7 +144,7 @@ public class WebProjectile {
 
     private static void stun(Player entity) {
         entity.addPotionEffects(stunEffects);
-        entity.playSound(entity.getLocation(), Sound.ENTITY_LLAMA_SPIT, SoundCategory.HOSTILE,5, (float) 0.5);
+        entity.playSound(entity.getLocation(), Sound.ENTITY_LLAMA_SPIT, SoundCategory.HOSTILE, 5, (float) 0.5);
     }
 
     private void killAll() {
@@ -157,7 +157,7 @@ public class WebProjectile {
     private void checkDead() {
         boolean allDead = false;
         for (ArmorStand projectile : projectiles) {
-            if (projectile.isDead()) {
+            if (!projectile.isValid()) {
                 allDead = true;
                 break;
             }

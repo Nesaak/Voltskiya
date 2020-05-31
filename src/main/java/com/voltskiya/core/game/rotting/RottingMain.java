@@ -32,7 +32,6 @@ public class RottingMain {
 
         plugin = pl;
         dataFolder = folder;
-        IsRottable.initialize();
         getChart();
         lastCheckedKey = new NamespacedKey(pl, GameTagsNavigate.RottingTagsNavigate.LAST_CHECKED);
         rottingCountdownKey = new NamespacedKey(pl, GameTagsNavigate.RottingTagsNavigate.ROTTING_COUNTDOWN);

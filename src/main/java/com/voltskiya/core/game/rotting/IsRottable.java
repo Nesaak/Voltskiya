@@ -1,27 +1,36 @@
 package com.voltskiya.core.game.rotting;
 
+import com.google.common.collect.ImmutableSet;
 import org.bukkit.Material;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 public class IsRottable {
-    private static HashSet<Material> rottables = new HashSet<>();
-    private static HashSet<Material> nonRottables = new HashSet<>();
+    private static Set<Material> rottables;
+    private static Set<Material> nonRottables;
 
-    public static void initialize() {
-        rottables.add(Material.KELP);
-        rottables.add(Material.BROWN_MUSHROOM);
-        rottables.add(Material.RED_MUSHROOM);
-        rottables.add(Material.BROWN_MUSHROOM_BLOCK);
-        rottables.add(Material.RED_MUSHROOM_BLOCK);
-        rottables.add(Material.WHEAT);
-        rottables.add(Material.CAKE);
-        rottables.add(Material.COCOA_BEANS);
-        rottables.add(Material.SUGAR_CANE);
+    static {
+        HashSet<Material> rottablesHash = new HashSet<>();
+        HashSet<Material> nonRottablesHash = new HashSet<>();
+        rottablesHash.add(Material.KELP);
+        rottablesHash.add(Material.BROWN_MUSHROOM);
+        rottablesHash.add(Material.RED_MUSHROOM);
+        rottablesHash.add(Material.BROWN_MUSHROOM_BLOCK);
+        rottablesHash.add(Material.RED_MUSHROOM_BLOCK);
+        rottablesHash.add(Material.WHEAT);
+        rottablesHash.add(Material.CAKE);
+        rottablesHash.add(Material.COCOA_BEANS);
+        rottablesHash.add(Material.SUGAR_CANE);
 
-        nonRottables.add(Material.SPIDER_EYE);
-        nonRottables.add(Material.ROTTEN_FLESH);
-        nonRottables.add(Material.GOLDEN_APPLE);
+        nonRottablesHash.add(Material.SPIDER_EYE);
+        nonRottablesHash.add(Material.ROTTEN_FLESH);
+        nonRottablesHash.add(Material.GOLDEN_APPLE);
+
+        rottables = Collections.unmodifiableSet(rottablesHash);
+        nonRottables = Collections.unmodifiableSet(nonRottablesHash);
+
     }
 
     public static boolean isRottable(Material type) {

@@ -15,11 +15,10 @@ import java.util.HashMap;
 import java.util.UUID;
 
 class RegenListener implements Listener {
-    HashMap<UUID, Long> noRegenPlayers;
+    HashMap<UUID, Long> noRegenPlayers= new HashMap<>();
     long noRegenTime;
 
     public RegenListener(JavaPlugin plugin, File dataFolder) {
-        noRegenPlayers = new HashMap<>();
         File file = new File(dataFolder + File.separator + "noImmediateRegen" + File.separator + "config.yml");
         if (!file.exists()) {
             System.err.println(dataFolder + File.separator + "noImmediateRegen" + File.separator + "config.yml" + " does not exist!");

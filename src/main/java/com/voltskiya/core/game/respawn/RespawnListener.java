@@ -21,15 +21,14 @@ import java.util.Set;
 
 public class RespawnListener implements Listener {
     private JavaPlugin plugin;
-    private List<Coord> spawnCoords;
+    private List<Coord> spawnCoords = new ArrayList<>();
     private World spawnWorld;
-    private Random random;
+    private Random random = new Random();
     private int invincibilityTicks;
     private int fallHeight;
 
-    public RespawnListener(JavaPlugin plugin,File dataFolder) {
+    public RespawnListener(JavaPlugin plugin, File dataFolder) {
         this.plugin = plugin;
-        spawnCoords = new ArrayList<>();
         File file = new File(String.format("%s%s%s%s%s%s", dataFolder, File.separator, GameYMLNavigate.RespawnYMLNavigate.RESPAWN_DIR, File.separator, GameYMLNavigate.RespawnYMLNavigate.SPAWN, ".yml"));
         YamlConfiguration configOrig = YamlConfiguration.loadConfiguration(file);
         ConfigurationSection config = configOrig.getConfigurationSection(GameYMLNavigate.RespawnYMLNavigate.SPAWN);
@@ -56,7 +55,6 @@ public class RespawnListener implements Listener {
                 continue;
             spawnCoords.add(new Coord(coordConfig));
         }
-        random = new Random();
         Bukkit.getPluginManager().registerEvents(this, plugin);
 
     }
@@ -70,7 +68,7 @@ public class RespawnListener implements Listener {
             event.setRespawnLocation(spawnLocation);
             // because it sometimes doesn't trigger, this might make it more likely to trigger because the invincibility might be happening before the death
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> event.getPlayer().addPotionEffect(
-                    new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,invincibilityTicks,10)), 1);
+                    new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, invincibilityTicks, 10)), 1);
         }
     }
 }

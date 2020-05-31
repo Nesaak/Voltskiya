@@ -1,5 +1,6 @@
 package com.voltskiya.core.game.rotting;
 
+import com.google.common.collect.ImmutableSet;
 import com.voltskiya.core.game.GameTagsNavigate;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,22 +15,21 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class RottingMain {
-    public static HashMap<String, Long> rottingChart;
-    public static Map<String, String> rotIntoChart;
+    public static Map<String, Long> rottingChart = new HashMap<>();
+    public static Map<String, String> rotIntoChart = new HashMap<>();
     public static NamespacedKey lastCheckedKey;
     public static NamespacedKey rottingCountdownKey;
     public static NamespacedKey cooler;
     public static NamespacedKey vanilla;
     private static JavaPlugin plugin;
     private static File dataFolder;
-    public static HashSet<InventoryType> furanceTypes;
+    public static ImmutableSet<InventoryType> furanceTypes = ImmutableSet.of(
+            InventoryType.FURNACE,
+            InventoryType.BLAST_FURNACE,
+            InventoryType.SMOKER
+    );
 
     public static void enable(JavaPlugin pl, File folder) {
-        furanceTypes = new HashSet<>();
-        furanceTypes.add(InventoryType.FURNACE);
-        furanceTypes.add(InventoryType.BLAST_FURNACE);
-        furanceTypes.add(InventoryType.SMOKER);
-
         plugin = pl;
         dataFolder = folder;
         getChart();
@@ -49,9 +49,6 @@ public class RottingMain {
     }
 
     private static void getChart() {
-        rottingChart = new HashMap<>();
-        rotIntoChart = new HashMap<>();
-
         File file = new File(String.format("%s%s%s", dataFolder, File.separator, GameTagsNavigate.RottingTagsNavigate.ROTTING_DIR));
         if (!file.exists())
             if (!file.mkdir()) {

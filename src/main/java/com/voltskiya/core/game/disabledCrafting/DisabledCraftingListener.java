@@ -15,11 +15,10 @@ import java.util.HashSet;
 
 public class DisabledCraftingListener implements Listener {
 
-    private HashSet<Material> disabled;
+    private HashSet<Material> disabled = new HashSet<>();
 
     public DisabledCraftingListener(JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        disabled = new HashSet<>();
         disabled.add(Material.WHEAT);
         disabled.add(Material.DRIED_KELP);
     }

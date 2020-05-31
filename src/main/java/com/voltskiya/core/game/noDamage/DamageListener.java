@@ -11,12 +11,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashSet;
 
 class DamageListener implements Listener {
-    private long lastDamage = 0;
     private JavaPlugin plugin;
-    private HashSet<EntityDamageEvent.DamageCause> cooldowns;
+    private HashSet<EntityDamageEvent.DamageCause> cooldowns = new HashSet<>();
 
     public DamageListener(JavaPlugin plugin) {
-        cooldowns = new HashSet<>();
         cooldowns.add(EntityDamageEvent.DamageCause.CUSTOM);
         cooldowns.add(EntityDamageEvent.DamageCause.MAGIC);
         Bukkit.getPluginManager().registerEvents(this, plugin);

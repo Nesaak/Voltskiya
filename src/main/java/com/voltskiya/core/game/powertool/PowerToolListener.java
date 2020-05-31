@@ -1,5 +1,6 @@
 package com.voltskiya.core.game.powertool;
 
+import com.voltskiya.core.game.GameTagsNavigate;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -39,11 +40,11 @@ class PowerToolListener implements Listener {
                     return;
                 cooldown.put(player.getUniqueId(), System.currentTimeMillis());
                 int i = 0;
-                NamespacedKey key = new NamespacedKey(plugin, TagsNavigate.POWER_TOOL_TAG + i);
+                NamespacedKey key = new NamespacedKey(plugin, GameTagsNavigate.PowertoolTagsNavigate.POWER_TOOL_TAG + i);
                 String comamndToExecute = mainMeta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
                 while (comamndToExecute != null) {
                     player.performCommand(comamndToExecute);
-                    key = new NamespacedKey(plugin, TagsNavigate.POWER_TOOL_TAG + ++i);
+                    key = new NamespacedKey(plugin, GameTagsNavigate.PowertoolTagsNavigate.POWER_TOOL_TAG + ++i);
                     comamndToExecute = mainMeta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
                 }
             }

@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
 import com.voltskiya.core.common.Permission;
+import com.voltskiya.core.game.GameTagsNavigate;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -38,10 +39,10 @@ public class PowerToolCommand extends BaseCommand {
         }
 
         int i = 0;
-        NamespacedKey key = new NamespacedKey(plugin, TagsNavigate.POWER_TOOL_TAG + i);
+        NamespacedKey key = new NamespacedKey(plugin, GameTagsNavigate.PowertoolTagsNavigate.POWER_TOOL_TAG + i);
         String comamndToExecute = mainMeta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
         while (comamndToExecute != null) {
-            key = new NamespacedKey(plugin, TagsNavigate.POWER_TOOL_TAG + ++i);
+            key = new NamespacedKey(plugin, GameTagsNavigate.PowertoolTagsNavigate.POWER_TOOL_TAG + ++i);
             comamndToExecute = mainMeta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
         }
         mainMeta.getPersistentDataContainer().set(key, PersistentDataType.STRING, args);
@@ -62,11 +63,11 @@ public class PowerToolCommand extends BaseCommand {
         }
         player.sendMessage(ChatColor.GREEN + "Here is a list of all the commands on the powertool in your hand:");
         int i = 0;
-        NamespacedKey key = new NamespacedKey(plugin, TagsNavigate.POWER_TOOL_TAG + i);
+        NamespacedKey key = new NamespacedKey(plugin, GameTagsNavigate.PowertoolTagsNavigate.POWER_TOOL_TAG + i);
         String comamndToExecute = mainMeta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
         while (comamndToExecute != null) {
             player.sendMessage(ChatColor.DARK_GREEN + comamndToExecute);
-            key = new NamespacedKey(plugin, TagsNavigate.POWER_TOOL_TAG + ++i);
+            key = new NamespacedKey(plugin, GameTagsNavigate.PowertoolTagsNavigate.POWER_TOOL_TAG + ++i);
             comamndToExecute = mainMeta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
         }
     }
@@ -85,10 +86,10 @@ public class PowerToolCommand extends BaseCommand {
         }
 
         int i = 0;
-        NamespacedKey key = new NamespacedKey(plugin, TagsNavigate.POWER_TOOL_TAG + i);
+        NamespacedKey key = new NamespacedKey(plugin, GameTagsNavigate.PowertoolTagsNavigate.POWER_TOOL_TAG + i);
         while (mainMeta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
             mainMeta.getPersistentDataContainer().remove(key);
-            key = new NamespacedKey(plugin, TagsNavigate.POWER_TOOL_TAG + ++i);
+            key = new NamespacedKey(plugin, GameTagsNavigate.PowertoolTagsNavigate.POWER_TOOL_TAG + ++i);
         }
         mainHand.setItemMeta(mainMeta);
 
@@ -107,10 +108,10 @@ public class PowerToolCommand extends BaseCommand {
                 continue;
             }
             int i = 0;
-            NamespacedKey key = new NamespacedKey(plugin, TagsNavigate.POWER_TOOL_TAG + i);
+            NamespacedKey key = new NamespacedKey(plugin, GameTagsNavigate.PowertoolTagsNavigate.POWER_TOOL_TAG + i);
             while (mainMeta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
                 mainMeta.getPersistentDataContainer().remove(key);
-                key = new NamespacedKey(plugin, TagsNavigate.POWER_TOOL_TAG + ++i);
+                key = new NamespacedKey(plugin, GameTagsNavigate.PowertoolTagsNavigate.POWER_TOOL_TAG + ++i);
             }
             item.setItemMeta(mainMeta);
         }

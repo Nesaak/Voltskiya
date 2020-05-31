@@ -1,5 +1,6 @@
 package com.voltskiya.core.game.rotting;
 
+import com.voltskiya.core.game.GameTagsNavigate;
 import net.minecraft.server.v1_15_R1.NBTBase;
 import net.minecraft.server.v1_15_R1.NBTTagCompound;
 import org.bukkit.*;
@@ -40,7 +41,7 @@ public class CoolerPlaceListener implements Listener {
             NBTBase itemTags = compound.get("Item");
             if (itemTags == null)
                 return;
-            if (itemTags.asString().equals(TagsNavigate.COOLER_ITEM)) {
+            if (itemTags.asString().equals(GameTagsNavigate.RottingTagsNavigate.COOLER_ITEM)) {
                 // this should be a cooler that we place
                 @NotNull Block placed = event.getBlockPlaced();
                 BlockState state = placed.getState();
@@ -55,7 +56,7 @@ public class CoolerPlaceListener implements Listener {
                     ((Chest) state).setCustomName("Cooler");
                     state.update();
                 }
-            } else if (itemTags.asString().equals(TagsNavigate.FREEZER_ITEM)) {
+            } else if (itemTags.asString().equals(GameTagsNavigate.RottingTagsNavigate.FREEZER_ITEM)) {
                 // this should be a cooler that we place
                 @NotNull Block placed = event.getBlockPlaced();
                 BlockState state = placed.getState();

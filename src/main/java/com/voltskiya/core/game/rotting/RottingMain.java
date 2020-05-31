@@ -1,5 +1,6 @@
 package com.voltskiya.core.game.rotting;
 
+import com.voltskiya.core.game.GameTagsNavigate;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -33,10 +34,10 @@ public class RottingMain {
         dataFolder = folder;
         IsRottable.initialize();
         getChart();
-        lastCheckedKey = new NamespacedKey(pl, TagsNavigate.LAST_CHECKED);
-        rottingCountdownKey = new NamespacedKey(pl, TagsNavigate.ROTTING_COUNTDOWN);
-        cooler = new NamespacedKey(pl, TagsNavigate.COOLER);
-        vanilla = new NamespacedKey(pl, TagsNavigate.VANILLA);
+        lastCheckedKey = new NamespacedKey(pl, GameTagsNavigate.RottingTagsNavigate.LAST_CHECKED);
+        rottingCountdownKey = new NamespacedKey(pl, GameTagsNavigate.RottingTagsNavigate.ROTTING_COUNTDOWN);
+        cooler = new NamespacedKey(pl, GameTagsNavigate.RottingTagsNavigate.COOLER);
+        vanilla = new NamespacedKey(pl, GameTagsNavigate.RottingTagsNavigate.VANILLA);
         new RottingListener(pl);
         new RottingMerge(pl);
         new RenameListener(pl);
@@ -52,13 +53,13 @@ public class RottingMain {
         rottingChart = new HashMap<>();
         rotIntoChart = new HashMap<>();
 
-        File file = new File(String.format("%s%s%s", dataFolder, File.separator, TagsNavigate.ROTTING_DIR));
+        File file = new File(String.format("%s%s%s", dataFolder, File.separator, GameTagsNavigate.RottingTagsNavigate.ROTTING_DIR));
         if (!file.exists())
             if (!file.mkdir()) {
                 System.err.println("[Voltskiya] [Game] [Rotting] Could not make the directory for rotting");
                 return;
             }
-        file = new File(String.format("%s%s%s%s%s%s", dataFolder, File.separator, TagsNavigate.ROTTING_DIR, File.separator, TagsNavigate.ROTTING_CHART, ".yml"));
+        file = new File(String.format("%s%s%s%s%s%s", dataFolder, File.separator, GameTagsNavigate.RottingTagsNavigate.ROTTING_DIR, File.separator, GameTagsNavigate.RottingTagsNavigate.ROTTING_CHART, ".yml"));
         if (!file.exists())
             try {
                 if (!file.createNewFile()) {
@@ -70,9 +71,9 @@ public class RottingMain {
                 return;
             }
         YamlConfiguration configOrig = YamlConfiguration.loadConfiguration(file);
-        ConfigurationSection config = configOrig.getConfigurationSection(TagsNavigate.YML_CHART);
+        ConfigurationSection config = configOrig.getConfigurationSection(GameTagsNavigate.RottingTagsNavigate.YML_CHART);
         if (config == null) {
-            config = configOrig.createSection(TagsNavigate.YML_CHART);
+            config = configOrig.createSection(GameTagsNavigate.RottingTagsNavigate.YML_CHART);
             try {
                 configOrig.save(file);
             } catch (IOException ignored) {
@@ -82,7 +83,7 @@ public class RottingMain {
             long decayRate = config.getLong(key);
             rottingChart.put(key, decayRate);
         }
-        file = new File(String.format("%s%s%s%s%s%s", dataFolder, File.separator, TagsNavigate.ROTTING_DIR, File.separator, TagsNavigate.ROT_INTO_CHART, ".yml"));
+        file = new File(String.format("%s%s%s%s%s%s", dataFolder, File.separator, GameTagsNavigate.RottingTagsNavigate.ROTTING_DIR, File.separator, GameTagsNavigate.RottingTagsNavigate.ROT_INTO_CHART, ".yml"));
         if (!file.exists())
             try {
                 if (!file.createNewFile()) {
@@ -94,9 +95,9 @@ public class RottingMain {
                 return;
             }
         configOrig = YamlConfiguration.loadConfiguration(file);
-        config = configOrig.getConfigurationSection(TagsNavigate.YML_CHART);
+        config = configOrig.getConfigurationSection(GameTagsNavigate.RottingTagsNavigate.YML_CHART);
         if (config == null) {
-            config = configOrig.createSection(TagsNavigate.YML_CHART);
+            config = configOrig.createSection(GameTagsNavigate.RottingTagsNavigate.YML_CHART);
             try {
                 configOrig.save(file);
             } catch (IOException ignored) {

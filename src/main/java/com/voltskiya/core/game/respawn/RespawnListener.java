@@ -1,5 +1,6 @@
 package com.voltskiya.core.game.respawn;
 
+import com.voltskiya.core.game.GameYMLNavigate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -29,9 +30,9 @@ public class RespawnListener implements Listener {
     public RespawnListener(JavaPlugin plugin,File dataFolder) {
         this.plugin = plugin;
         spawnCoords = new ArrayList<>();
-        File file = new File(String.format("%s%s%s%s%s%s", dataFolder, File.separator, YMLNavigate.RESPAWN_DIR, File.separator, YMLNavigate.SPAWN, ".yml"));
+        File file = new File(String.format("%s%s%s%s%s%s", dataFolder, File.separator, GameYMLNavigate.RespawnYMLNavigate.RESPAWN_DIR, File.separator, GameYMLNavigate.RespawnYMLNavigate.SPAWN, ".yml"));
         YamlConfiguration configOrig = YamlConfiguration.loadConfiguration(file);
-        ConfigurationSection config = configOrig.getConfigurationSection(YMLNavigate.SPAWN);
+        ConfigurationSection config = configOrig.getConfigurationSection(GameYMLNavigate.RespawnYMLNavigate.SPAWN);
         if (config == null) {
             System.err.println("[Volskiya] [Game] [RespawnRegion] could not load a spawn");
             return;

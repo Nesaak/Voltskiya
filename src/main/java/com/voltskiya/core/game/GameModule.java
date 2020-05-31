@@ -22,7 +22,7 @@ public class GameModule extends VoltskiyaModule {
         JavaPlugin plugin = Voltskiya.get();
 
         BedTeleportMain.enable(plugin);
-        DisabledCraftingMain.enable(plugin);
+        DisabledCraftingMain.enable();
         ImmunityMain.enable(plugin);
         EquipMain.enable(plugin);
         NoDamageMain.enable(plugin);

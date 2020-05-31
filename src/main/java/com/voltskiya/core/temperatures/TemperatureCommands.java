@@ -1,11 +1,9 @@
 package com.voltskiya.core.temperatures;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.Single;
-import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.annotation.*;
 import com.voltskiya.core.Voltskiya;
+import com.voltskiya.core.common.Permission;
 import com.voltskiya.core.temperatures.constants.NavigateArmor;
 import com.voltskiya.core.temperatures.constants.NavigateBlocks;
 import com.voltskiya.core.temperatures.constants.NavigatePlayers;
@@ -23,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 
 @CommandAlias("temperature")
+@CommandPermission(Permission.TEMPERATURES)
 public class TemperatureCommands extends BaseCommand {
     private File dataFolder;
 

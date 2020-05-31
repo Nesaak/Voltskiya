@@ -10,4 +10,8 @@ public class Permission {
 
     public static String ColorChat = "chat.color";
     public static String AdminChat = "chat.admin";
+
+    // Game
+
+    public final static String Powertool = "voltskiya.powertool";
 }

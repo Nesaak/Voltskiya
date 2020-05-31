@@ -2,8 +2,10 @@ package com.voltskiya.core.game.powertool;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
+import com.voltskiya.core.common.Permission;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -13,7 +15,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-@CommandAlias("power_tool")
+@CommandAlias("powertool|pt")
+@CommandPermission(Permission.Powertool)
 public class PowerToolCommand extends BaseCommand {
     private JavaPlugin plugin;
 

@@ -1,0 +1,18 @@
+package com.voltskiya.core.game.rotting;
+
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+
+class SlotFinderListener implements Listener {
+    public SlotFinderListener(JavaPlugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void slotFinder(InventoryClickEvent event) {
+        System.out.println(event.getSlot());
+    }
+}

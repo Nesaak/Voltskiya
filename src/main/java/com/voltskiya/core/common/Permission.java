@@ -13,5 +13,6 @@ public class Permission {
 
     // Game
 
+    public final static String Powertool = "voltskiya.powertool";
     public final static String TEMPERATURES = "voltskiya.temperature";
 }

@@ -20,3 +20,12 @@
 target
 .idea
 pom.xml
+
+
+# Ignore Gradle
+.gradle
+build
+/gradlew
+/gradlew.bat
+/libs/
+/gradle/

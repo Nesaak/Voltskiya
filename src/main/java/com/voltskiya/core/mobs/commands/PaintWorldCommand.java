@@ -3,19 +3,24 @@ package com.voltskiya.core.mobs.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.common.Permission;
 import com.voltskiya.core.mobs.commands.paint.PaintWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @CommandAlias("test")
 public class PaintWorldCommand extends BaseCommand {
@@ -55,5 +60,28 @@ public class PaintWorldCommand extends BaseCommand {
     @Subcommand("graphics loadFromDisk")
     public void loadFromDisk() {
         PaintWorld.readWorldBukkit();
+    }
+
+    @CommandPermission(Permission.WORLD_READING)
+    @Subcommand("spawn mob")
+    public void spawnMob(Player player) {
+        Location location = player.getLocation();
+        World world = location.getWorld();
+        Entity spawned = world.spawnEntity(location, EntityType.ARMOR_STAND);
+        UUID uid = spawned.getUniqueId();
+        PaintWorld.drawMob(location, uid);
+
+    }
+
+    @CommandPermission(Permission.WORLD_READING)
+    @Subcommand("spawn mob custom")
+    public void spawnCustomMob(Player player, @Single String arg) {
+        Location location = player.getLocation();
+        World world = location.getWorld();
+        Entity spawned = world.spawnEntity(location, EntityType.ARMOR_STAND);
+        spawned.setCustomName(arg);
+        UUID uid = spawned.getUniqueId();
+        PaintWorld.drawMob(location, uid);
+
     }
 }

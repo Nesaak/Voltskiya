@@ -1,5 +1,6 @@
 package com.voltskiya.core.mobs.commands.paint;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 
@@ -8,15 +9,14 @@ import java.awt.*;
 
 import static java.awt.Color.*;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PaintersGraphics extends JFrame {
+    public static final int WIDTH = 1000;
     PaintersWorld world;
-    HashMap<String, Color> colors = new HashMap<>();
+    Map<String, Color> colors = new HashMap<>();
+    Map<UUID, Location> mobs = new ConcurrentHashMap<>();
 
     public PaintersGraphics(PaintersWorld world) {
         super("Map");
@@ -64,15 +64,18 @@ public class PaintersGraphics extends JFrame {
 
     }
 
+    public void putMob(Location loc, UUID name) {
+        mobs.put(name, loc);
+    }
 
     private void prepare() {
-        setSize(1000, 1000);
+        //noinspection SuspiciousNameCombination
+        setSize(WIDTH, WIDTH);
         this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
     }
 
     @Override
     public void paint(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
         int minX = 0;
         int maxX = 0;
         int minZ = 0;
@@ -89,11 +92,12 @@ public class PaintersGraphics extends JFrame {
         maxZ *= 16;
         int rangeX = maxX - minX;
         int rangeZ = maxZ - minZ;
-        rangeX /= 1000;
-        rangeZ /= 1000;
+        rangeX /= WIDTH;
+        rangeZ /= WIDTH;
         rangeX++;
         rangeZ++;
         int range = Math.max(rangeX, rangeZ);
+
         Set<String> biomesNotDone = new HashSet<>();
         Biome[] biomes = Biome.values();
         Material[] materials = Material.values();
@@ -115,9 +119,23 @@ public class PaintersGraphics extends JFrame {
                 }
             }
         }
+
+        for (UUID uid : mobs.keySet()) {
+            Location location = mobs.get(uid);
+            int x = (location.getBlockX() - minX) / range;
+            int z = (location.getBlockZ() - minZ) / range;
+            g.setColor(black);
+            g.drawLine(x + 1, z - 1, x + 1, z + 1);
+            g.drawLine(x, z - 1, x, z + 1);
+            g.drawLine(x - 1, z - 1, x - 1, z + 1);
+        }
+        g.setColor(black);
+        g.drawLine(5, 500, 50, 200);
+
         for (String biome : biomesNotDone) {
             System.out.println(String.format("colors.put(\"%s\", new Color(0, 0, 0));", biome));
         }
         System.out.println("--------------");
     }
+
 }

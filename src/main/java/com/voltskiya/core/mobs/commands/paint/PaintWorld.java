@@ -1,10 +1,10 @@
 package com.voltskiya.core.mobs.commands.paint;
 
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import com.voltskiya.core.Voltskiya;
 import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
+import org.bukkit.Location;
 
 import java.io.*;
 import java.util.*;
@@ -106,5 +106,10 @@ public class PaintWorld {
         writer.write(json);
         writer.flush();
         writer.close();
+    }
+
+    public static void drawMob(Location loc, UUID uid) {
+        graphics.putMob(loc,uid);
+        graphics.repaint();
     }
 }

@@ -1,21 +1,17 @@
 package com.voltskiya.core.mobs.commands.paint;
 
-import com.google.gson.JsonObject;
+
+import org.bukkit.Material;
+import org.bukkit.block.Biome;
 
 public class PaintersBlock {
-    public final String blockType;
+    public final int blockType;
     public final int elevation;
-    public final String biome;
-
-    public PaintersBlock(JsonObject jsonObject) {
-        this.blockType = jsonObject.get("blockType").getAsString();
-        this.elevation = jsonObject.get("elevation").getAsInt();
-        this.biome = jsonObject.get("biome").getAsString();
-    }
+    public final int biome;
 
     public PaintersBlock(String blockType, int elevation, String biome) {
-        this.blockType = blockType;
+        this.blockType = Material.valueOf(blockType).ordinal();
         this.elevation = elevation;
-        this.biome = biome;
+        this.biome = Biome.valueOf(biome).ordinal();
     }
 }

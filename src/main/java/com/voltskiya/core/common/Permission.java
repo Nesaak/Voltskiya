@@ -10,4 +10,5 @@ public class Permission {
 
     public static String ColorChat = "chat.color";
     public static String AdminChat = "chat.admin";
+    public final static String WORLD_READING = "paint.testing";
 }

@@ -45,6 +45,14 @@ public class SkillPointsGUI implements InventoryHolder {
         // 0 1 2 3 4 5 6 7 8 - item slots
         for (int i = 0; i < clickableItems.length; i++) {
             final SkillItem clickableItem = clickableItems[i];
+
+            if (clickableItem instanceof NothingSkillItem)
+                continue; // skip nothing just to save resources
+
+            int points = clickableItem.getAttribute(player);
+            if (points < 1)
+                points = 1;
+
             ItemStack item = new ItemStack(clickableItem.itemType);
             ItemMeta im = item.getItemMeta();
             if (im == null)

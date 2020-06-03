@@ -15,4 +15,6 @@ public abstract class SkillItem {
     public abstract int getXpCost();
 
     public abstract String getDisplayName();
+
+    public abstract int getAttribute(Player player);
 }

@@ -24,4 +24,9 @@ public class NothingSkillItem extends SkillItem {
     public String getDisplayName() {
         return displayName;
     }
+
+    @Override
+    public int getAttribute(Player player) {
+        return 0;
+    }
 }

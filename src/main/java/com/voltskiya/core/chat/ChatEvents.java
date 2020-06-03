@@ -36,6 +36,6 @@ public class ChatEvents implements Listener {
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
-        event.setQuitMessage(DARK_RED + "[" + RED + "+" + DARK_RED+ "] " + RESET + UserUtil.getDisplayName(event.getPlayer()));
+        event.setQuitMessage(DARK_RED + "[" + RED + "-" + DARK_RED+ "] " + RESET + UserUtil.getDisplayName(event.getPlayer()));
     }
 }

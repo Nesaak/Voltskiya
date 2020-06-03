@@ -11,6 +11,7 @@ import com.voltskiya.core.game.noRegen.NoRegenMain;
 import com.voltskiya.core.game.powertool.PowerToolMain;
 import com.voltskiya.core.game.respawn.RespawnMain;
 import com.voltskiya.core.game.rotting.RottingMain;
+import com.voltskiya.core.game.skill_points.SkillPointsMain;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -21,6 +22,8 @@ public class GameModule extends VoltskiyaModule {
         final File dataFolder = getDataFolder();
         JavaPlugin plugin = Voltskiya.get();
 
+        GameTagsNavigate.initialize(plugin);
+
         BedTeleportMain.enable(plugin);
         DisabledCraftingMain.enable();
         ImmunityMain.enable(plugin);
@@ -30,6 +33,7 @@ public class GameModule extends VoltskiyaModule {
         PowerToolMain.enable(plugin);
         RespawnMain.enable(plugin, dataFolder);
         RottingMain.enable(plugin, dataFolder);
+        SkillPointsMain.enable(plugin);
     }
 
     @Override

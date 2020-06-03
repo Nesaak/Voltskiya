@@ -10,6 +10,6 @@ import org.bukkit.entity.Player;
 public class SkillPointsCommand extends BaseCommand {
     @Default
     public void skillPoints(Player player) {
-        new SkillPointsGUI().openInventory(player);
+        new SkillPointsGUI(player);
     }
 }

@@ -1,6 +1,7 @@
 package com.voltskiya.core.game.skill_points.inventory;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -8,7 +9,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkillPointsGUI implements InventoryHolder {
     private Inventory myInventory;
@@ -35,12 +40,30 @@ public class SkillPointsGUI implements InventoryHolder {
         clickableItems[8] = new WalkSpeedSkillItem(Material.FEATHER);
     }
 
-    public SkillPointsGUI() {
+    public SkillPointsGUI(Player player) {
         myInventory = Bukkit.createInventory(this, clickableItems.length, "Skill Points");
         // 0 1 2 3 4 5 6 7 8 - item slots
         for (int i = 0; i < clickableItems.length; i++) {
-            myInventory.setItem(i, new ItemStack(clickableItems[i].itemType));
+            final SkillItem clickableItem = clickableItems[i];
+            ItemStack item = new ItemStack(clickableItem.itemType);
+            ItemMeta im = item.getItemMeta();
+            if (im == null)
+                continue;
+
+            // set the name
+            im.setDisplayName(clickableItem.getDisplayName());
+
+            // set the lore
+            List<String> lore = new ArrayList<>(2);
+            lore.add(String.format(ChatColor.DARK_GREEN + "It costs %d xp to increase speed", clickableItem.getXpCost()));
+            im.setLore(lore);
+            item.setItemMeta(im);
+
+            // the item has been made
+            myInventory.setItem(i, item);
         }
+        player.openInventory(myInventory);
+
     }
 
     public static void dealWithClick(InventoryClickEvent event) {
@@ -56,9 +79,5 @@ public class SkillPointsGUI implements InventoryHolder {
     @Override
     public @NotNull Inventory getInventory() {
         return myInventory;
-    }
-
-    public void openInventory(Player player) {
-        player.openInventory(myInventory);
     }
 }

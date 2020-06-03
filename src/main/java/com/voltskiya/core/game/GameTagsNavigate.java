@@ -1,6 +1,13 @@
 package com.voltskiya.core.game;
 
+import org.bukkit.NamespacedKey;
+import org.bukkit.plugin.java.JavaPlugin;
+
 public class GameTagsNavigate {
+    public static void initialize(JavaPlugin plugin) {
+        SkillPointsTagsNavigate.initialize(plugin);
+    }
+
     public static class RottingTagsNavigate {
         public static final String LAST_CHECKED = "time-last-checked";
         public static final String ROTTING_COUNTDOWN = "rotting-countdown";
@@ -16,5 +23,13 @@ public class GameTagsNavigate {
 
     public static class PowertoolTagsNavigate {
         public static final String POWER_TOOL_TAG = "power-tool";
+    }
+
+    public static class SkillPointsTagsNavigate {
+        public static NamespacedKey skillSpeed;
+
+        public static void initialize(JavaPlugin plugin) {
+            skillSpeed = new NamespacedKey(plugin, "skillSpeed");
+        }
     }
 }

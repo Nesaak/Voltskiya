@@ -9,5 +9,10 @@ public abstract class SkillItem {
     public SkillItem(Material itemType) {
         this.itemType = itemType;
     }
+
     public abstract void dealWithClick(Player player);
+
+    public abstract int getXpCost();
+
+    public abstract String getDisplayName();
 }

@@ -30,14 +30,20 @@ public class GameTagsNavigate {
         public static NamespacedKey skillMelee;
         public static NamespacedKey skillVitality;
         public static NamespacedKey skillThirst;
+        public static NamespacedKey skillStamina;
         public static NamespacedKey currentThirst;
+        public static NamespacedKey currentStamina;
+        public static NamespacedKey currentAir;
 
         public static void initialize(JavaPlugin plugin) {
             skillSpeed = new NamespacedKey(plugin, "skillSpeed");
             skillMelee = new NamespacedKey(plugin, "skillMelee");
             skillVitality = new NamespacedKey(plugin, "skillVitality");
             skillThirst = new NamespacedKey(plugin, "skillThirst");
+            skillStamina = new NamespacedKey(plugin, "skillStamina");
             currentThirst = new NamespacedKey(plugin, "currentThirst");
+            currentStamina = new NamespacedKey(plugin, "currentStamina");
+            currentAir = new NamespacedKey(plugin, "currentAir");
         }
     }
 }

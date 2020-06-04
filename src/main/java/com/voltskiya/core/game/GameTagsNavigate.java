@@ -28,10 +28,12 @@ public class GameTagsNavigate {
     public static class SkillPointsTagsNavigate {
         public static NamespacedKey skillSpeed;
         public static NamespacedKey skillMelee;
+        public static NamespacedKey skillVitality;
 
         public static void initialize(JavaPlugin plugin) {
             skillSpeed = new NamespacedKey(plugin, "skillSpeed");
             skillMelee = new NamespacedKey(plugin, "skillMelee");
+            skillVitality = new NamespacedKey(plugin, "skillVitality");
         }
     }
 }

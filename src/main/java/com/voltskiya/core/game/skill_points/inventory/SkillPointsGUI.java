@@ -1,9 +1,6 @@
 package com.voltskiya.core.game.skill_points.inventory;
 
-import com.voltskiya.core.game.skill_points.skill_items.MeleeSkillItem;
-import com.voltskiya.core.game.skill_points.skill_items.NothingSkillItem;
-import com.voltskiya.core.game.skill_points.skill_items.SkillItem;
-import com.voltskiya.core.game.skill_points.skill_items.WalkSpeedSkillItem;
+import com.voltskiya.core.game.skill_points.skill_items.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -38,10 +35,10 @@ public class SkillPointsGUI implements InventoryHolder {
         clickableItems[2] = nothingItem;
         clickableItems[3] = nothingItem;
         clickableItems[4] = nothingItem;
-        clickableItems[5] = nothingItem;
+        clickableItems[5] = new VitalitySkillItem(Material.BEEF);
         clickableItems[6] = new MeleeSkillItem(Material.IRON_SWORD);
         clickableItems[7] = nothingItem;
-        clickableItems[8] = new WalkSpeedSkillItem(Material.FEATHER);
+        clickableItems[8] = new SpeedSkillItem(Material.FEATHER);
     }
 
     public SkillPointsGUI(Player player) {
@@ -67,7 +64,7 @@ public class SkillPointsGUI implements InventoryHolder {
 
             // set the lore
             List<String> lore = new ArrayList<>(2);
-            lore.add(String.format(ChatColor.DARK_GREEN + "It costs %d xp to increase speed", clickableItem.getXpCost()));
+            lore.add(String.format(ChatColor.DARK_GREEN + "It costs %d xp to increase speed", clickableItem.getXpCost(clickableItem.getAttribute(player))));
             im.setLore(lore);
             item.setItemMeta(im);
 

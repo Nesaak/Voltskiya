@@ -5,7 +5,6 @@ import com.voltskiya.core.game.skill_points.UpdateSkills;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataType;
 
 public class MeleeSkillItem extends SkillItem {
     private static final String displayName = "Melee Damage";
@@ -25,17 +24,12 @@ public class MeleeSkillItem extends SkillItem {
     }
 
     @Override
-    public int getXpCost() {
+    public int getXpCost(int newAttributeValue) {
         return 1;
     }
 
     @Override
     public String getDisplayName() {
         return displayName;
-    }
-
-    @Override
-    public int getAttribute(Player player) {
-        return player.getPersistentDataContainer().getOrDefault(key, PersistentDataType.INTEGER, 0);
     }
 }

@@ -22,9 +22,9 @@ public abstract class SkillItem {
 
     public void dealWithClick(Player player) {
         @NotNull PersistentDataContainer container = player.getPersistentDataContainer();
-        int speed = getAttribute(player) + 1;
-        container.set(getKey(), PersistentDataType.INTEGER, speed);
-        final int xpCost = getXpCost();
+        int newAttributeValue = getAttribute(player) + 1;
+        container.set(getKey(), PersistentDataType.INTEGER, newAttributeValue);
+        final int xpCost = getXpCost(newAttributeValue - 1);
         final int playerLevel = player.getLevel();
 
         if (playerLevel < xpCost) {
@@ -34,7 +34,7 @@ public abstract class SkillItem {
         player.setLevel(playerLevel - xpCost);
         dealWithUpdate(player);
 
-        player.sendMessage(ChatColor.GREEN + String.format("You've upgraded your %s to level %d!", getDisplayName(), speed));
+        player.sendMessage(ChatColor.GREEN + String.format("You've upgraded your %s to level %d!", getDisplayName(), newAttributeValue));
 
     }
 
@@ -42,10 +42,12 @@ public abstract class SkillItem {
 
     public abstract void dealWithUpdate(Player player);
 
-    public abstract int getXpCost();
+    public abstract int getXpCost(int newAttributeValue);
 
     public abstract String getDisplayName();
 
-    public abstract int getAttribute(Player player);
+    public int getAttribute(Player player) {
+        return player.getPersistentDataContainer().getOrDefault(getKey(), PersistentDataType.INTEGER, 0);
+    }
 
 }

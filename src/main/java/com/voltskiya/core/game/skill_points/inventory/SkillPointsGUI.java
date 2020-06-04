@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -64,7 +65,7 @@ public class SkillPointsGUI implements InventoryHolder {
 
             // set the lore
             List<String> lore = new ArrayList<>(2);
-            lore.add(String.format(ChatColor.DARK_GREEN + "It costs %d xp to increase speed", clickableItem.getXpCost(clickableItem.getAttribute(player))));
+            lore.add(String.format(ChatColor.DARK_GREEN + "It costs %d xp to increase %s", clickableItem.getXpCost(clickableItem.getAttribute(player)), clickableItem.getDisplayName()));
             im.setLore(lore);
             item.setItemMeta(im);
 
@@ -76,12 +77,16 @@ public class SkillPointsGUI implements InventoryHolder {
     }
 
     public static void dealWithClick(InventoryClickEvent event) {
-        int slot = event.getSlot();
-        if (slot > 0 && slot < clickableItems.length) {
-            event.setCancelled(true);
-            HumanEntity whoClicked = event.getWhoClicked();
-            if (whoClicked instanceof Player)
-                clickableItems[slot].dealWithClick((Player) whoClicked);
+        event.setCancelled(true); // cancel all clicks if this inventory is open
+        final HumanEntity whoClicked = event.getWhoClicked();
+        final int slot = event.getRawSlot();
+        if (slot >= 0 && slot < clickableItems.length) {
+            if (whoClicked instanceof Player) {
+                final SkillItem clickableItem = clickableItems[slot];
+                if (!(clickableItem instanceof NothingSkillItem)) {
+                    clickableItem.dealWithClick((Player) whoClicked);
+                }
+            }
         }
     }
 

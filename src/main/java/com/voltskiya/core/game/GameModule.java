@@ -33,7 +33,7 @@ public class GameModule extends VoltskiyaModule {
         PowerToolMain.enable(plugin);
         RespawnMain.enable(plugin, dataFolder);
         RottingMain.enable(plugin, dataFolder);
-        SkillPointsMain.enable(plugin);
+        SkillPointsMain.enable();
     }
 
     @Override

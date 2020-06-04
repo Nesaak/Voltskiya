@@ -47,7 +47,6 @@ public class ThirstBar {
     }
 
     private static void setThirstBar(Player player, double thirstPercentage) {
-        System.out.println(thirstPercentage);
         @Nullable AttributeInstance genericArmor = player.getAttribute(Attribute.GENERIC_ARMOR);
         if (genericArmor == null)
             // idk what to do

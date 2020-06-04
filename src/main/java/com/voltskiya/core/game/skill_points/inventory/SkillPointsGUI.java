@@ -56,6 +56,8 @@ public class SkillPointsGUI implements InventoryHolder {
                 points = 1;
 
             ItemStack item = new ItemStack(clickableItem.itemType);
+            item.setAmount(points);
+
             ItemMeta im = item.getItemMeta();
             if (im == null)
                 continue;

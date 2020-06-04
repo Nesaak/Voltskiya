@@ -48,6 +48,6 @@ public class UpdateSkills {
     }
 
     private static double getVitality(int melee) {
-        return 22; // normal is 20
+        return 222; // normal is 20
     }
 }

@@ -3,7 +3,8 @@ package com.voltskiya.core.game.skill_points;
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.game.skill_points.inventory.SkillPointClickListener;
 import com.voltskiya.core.game.skill_points.listeners.SkillPointsPlayerJoin;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.voltskiya.core.game.skill_points.thirst.ThirstDamageListener;
+import com.voltskiya.core.game.skill_points.thirst.ThirstPlayerListener;
 
 public class SkillPointsMain {
     public static void enable() {
@@ -11,6 +12,8 @@ public class SkillPointsMain {
         plugin.getCommandManager().registerCommand(new SkillPointsCommand());
         new SkillPointClickListener(plugin);
         new SkillPointsPlayerJoin(plugin);
+        new ThirstDamageListener(plugin);
+        new ThirstPlayerListener(plugin);
     }
 
 }

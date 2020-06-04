@@ -39,6 +39,12 @@ public class UpdateSkills {
             attribute.setBaseValue(getVitality(vitality));
     }
 
+    public static void updateThirst(Player player) {
+        @NotNull PersistentDataContainer container = player.getPersistentDataContainer();
+        int thirst = container.getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.skillThirst, PersistentDataType.INTEGER, 0);
+        container.set(GameTagsNavigate.SkillPointsTagsNavigate.skillThirst, PersistentDataType.INTEGER, thirst + 1);
+    }
+
     private static double getSpeed(int speedSkill) {
         return .1; // normal is ???
     }
@@ -50,4 +56,5 @@ public class UpdateSkills {
     private static double getVitality(int melee) {
         return 222; // normal is 20
     }
+
 }

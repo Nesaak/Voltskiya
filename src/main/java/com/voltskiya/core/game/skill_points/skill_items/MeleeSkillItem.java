@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class MeleeSkillItem extends SkillItem {
     private static final String displayName = "Melee Damage";
-    private static NamespacedKey key = GameTagsNavigate.SkillPointsTagsNavigate.skillMelee;
+    private NamespacedKey key = GameTagsNavigate.SkillPointsTagsNavigate.skillMelee;
     public MeleeSkillItem(Material itemType) {
         super(itemType);
     }

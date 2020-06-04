@@ -6,12 +6,11 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 
-public class VitalitySkillItem extends SkillItem {
+public class ThirstSkillItem extends SkillItem {
+    private NamespacedKey key = GameTagsNavigate.SkillPointsTagsNavigate.skillMelee;
+    private static String displayName = "Thirst";
 
-    private  NamespacedKey key = GameTagsNavigate.SkillPointsTagsNavigate.skillVitality;
-    private static String displayName = "Vitality";
-
-    public VitalitySkillItem(Material itemType) {
+    public ThirstSkillItem(Material itemType) {
         super(itemType);
     }
 
@@ -22,12 +21,12 @@ public class VitalitySkillItem extends SkillItem {
 
     @Override
     public void dealWithUpdate(Player player) {
-        UpdateSkills.updateVitality(player);
+        UpdateSkills.updateThirst(player);
     }
 
     @Override
     public int getXpCost(int newAttributeValue) {
-        return 1;
+        return newAttributeValue;
     }
 
     @Override

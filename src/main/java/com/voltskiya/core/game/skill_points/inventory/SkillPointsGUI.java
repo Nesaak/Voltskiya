@@ -1,5 +1,9 @@
 package com.voltskiya.core.game.skill_points.inventory;
 
+import com.voltskiya.core.game.skill_points.skill_items.MeleeSkillItem;
+import com.voltskiya.core.game.skill_points.skill_items.NothingSkillItem;
+import com.voltskiya.core.game.skill_points.skill_items.SkillItem;
+import com.voltskiya.core.game.skill_points.skill_items.WalkSpeedSkillItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,10 +27,10 @@ public class SkillPointsGUI implements InventoryHolder {
         /*
         0 Endurance: (Max Stamina)
         2 Hunger: (Max Hunger)
-        4 Thirst: (Max Thirst) TBA
+        3 Thirst: (Max Thirst) TBA
         5 Vitality: (Max HP)
-        7 Strength: (Melee Damage)
-        9 Walkspeed: (Max Walkspeed)
+        6 Strength: (Melee Damage)
+        8 Walkspeed: (Max Walkspeed)
          */
         SkillItem nothingItem = new NothingSkillItem(Material.AIR);
         clickableItems[0] = nothingItem;
@@ -35,7 +39,7 @@ public class SkillPointsGUI implements InventoryHolder {
         clickableItems[3] = nothingItem;
         clickableItems[4] = nothingItem;
         clickableItems[5] = nothingItem;
-        clickableItems[6] = nothingItem;
+        clickableItems[6] = new MeleeSkillItem(Material.IRON_SWORD);
         clickableItems[7] = nothingItem;
         clickableItems[8] = new WalkSpeedSkillItem(Material.FEATHER);
     }

@@ -1,6 +1,7 @@
-package com.voltskiya.core.game.skill_points.inventory;
+package com.voltskiya.core.game.skill_points.skill_items;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 
 public class NothingSkillItem extends SkillItem {
@@ -11,7 +12,12 @@ public class NothingSkillItem extends SkillItem {
     }
 
     @Override
-    public void dealWithClick(Player player) {
+    protected NamespacedKey getKey() {
+        return null;
+    }
+
+    @Override
+    public void dealWithUpdate(Player player) {
         // do nothing
     }
 

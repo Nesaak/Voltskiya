@@ -43,7 +43,7 @@ public class RottingMain {
         new RottingSmeltListener(pl);
         new CoolerPlaceListener(pl);
 
-        new SlotFinderListener(pl);
+//        new SlotFinderListener(pl);
 
         System.out.println("[Voltskiya] [Game] [Rotting] enabled");
     }

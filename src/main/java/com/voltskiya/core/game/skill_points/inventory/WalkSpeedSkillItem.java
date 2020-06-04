@@ -2,6 +2,7 @@ package com.voltskiya.core.game.skill_points.inventory;
 
 import com.voltskiya.core.game.GameTagsNavigate;
 import com.voltskiya.core.game.skill_points.UpdateSkills;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -23,9 +24,16 @@ public class WalkSpeedSkillItem extends SkillItem {
         @NotNull PersistentDataContainer container = player.getPersistentDataContainer();
         int speed = container.getOrDefault(key, PersistentDataType.INTEGER, 0) + 1;
         container.set(key, PersistentDataType.INTEGER, speed);
+        final int xpCost = getXpCost();
+        final int playerLevel = player.getLevel();
 
+        if (playerLevel < xpCost) {
+            player.sendMessage(getBadXpCost());
+            return;
+        }
+        player.setLevel(playerLevel - xpCost);
         UpdateSkills.updateSpeed(player);
-        player.sendMessage("Your speed has been updated");
+        player.sendMessage(ChatColor.GREEN + String.format("You've upgraded your speed to level %d!", speed));
     }
 
     @Override

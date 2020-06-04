@@ -7,6 +7,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 public class UpdateSkills {
+    public static void updateAll(Player player) {
+        updateSpeed(player);
+    }
+
     public static void updateSpeed(Player player) {
         @NotNull PersistentDataContainer container = player.getPersistentDataContainer();
         int speed = container.getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.skillSpeed, PersistentDataType.INTEGER, 0);
@@ -15,6 +19,6 @@ public class UpdateSkills {
     }
 
     private static float getSpeed(int speedSkill) {
-        return 1;
+        return (float) .3; // normal is 0.2
     }
 }

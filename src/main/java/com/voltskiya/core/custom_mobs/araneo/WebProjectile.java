@@ -131,7 +131,8 @@ public class WebProjectile {
         @NotNull Collection<Entity> nearbyEntities = world.getNearbyEntities(location, 1, 1, 1);
         for (Entity nearby : nearbyEntities) {
             if (nearby instanceof Player) {
-                if (((Player) nearby).getGameMode() == GameMode.SURVIVAL) {
+                final GameMode gameMode = ((Player) nearby).getGameMode();
+                if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
                     stun((Player) nearby);
                     killAll();
                     return;

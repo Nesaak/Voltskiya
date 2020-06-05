@@ -78,7 +78,8 @@ public class ThylaAI {
         for (Entity nearbyEntity : nearbyEntities) {
             if (nearbyEntity instanceof Player) {
                 Player player = (Player) nearbyEntity;
-                if (player.getGameMode() == GameMode.SURVIVAL)
+                final GameMode gameMode = player.getGameMode();
+                if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)
                     nearbyPlayers.add(player);
             }
         }

@@ -19,8 +19,9 @@ import java.util.Comparator;
 
 public class ActionBarRun implements Listener {
     private JavaPlugin plugin;
+    private static ActionBarRun instance;
     private static TextComponent seperator = new TextComponent();
-    private static final short STAMINA_BAR_SIZE = 30;
+    public static final short STAMINA_BAR_SIZE = 30;
 
     static {
         seperator.setText("          ");
@@ -28,8 +29,14 @@ public class ActionBarRun implements Listener {
     }
 
     public ActionBarRun(JavaPlugin plugin) {
-        Bukkit.getPluginManager().registerEvents(this, plugin);
         this.plugin = plugin;
+        instance = this;
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    public static void updateOnce(Player player) {
+        TextComponent message = instance.getMessage(player);
+        ActionBar.sendLongActionBar(player, message);
     }
 
     @EventHandler

@@ -2,6 +2,7 @@ package com.voltskiya.core.game.skill_points.stamina;
 
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.game.GameTagsNavigate;
+import com.voltskiya.core.game.actionbar.ActionBarRun;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class PlayerAirObject {
+public class PlayerStaminaObject {
     private static final short INCREMENT = 5;
     private static final float TICKS_PER_DECREMENT = 100F;
     private static final float SLEEPING_MODIFIER = 5F;
@@ -20,6 +21,7 @@ public class PlayerAirObject {
     private static final float SWIMMING_MODIFIER = -0.75F;
 
     private List<Double> airToAttribute = new ArrayList<>(5);
+    private short lastStaminaSize = -1;
 
     // might be useful for the future?
     private void giveObjectAir(Player player, double amount) {
@@ -64,5 +66,11 @@ public class PlayerAirObject {
             currentStamina = maxStamina;
         }
         container.set(GameTagsNavigate.SkillPointsTagsNavigate.currentStamina, PersistentDataType.DOUBLE, currentStamina);
+        double percentageStamina = currentStamina / maxStamina;
+        short staminaSize = (short) (ActionBarRun.STAMINA_BAR_SIZE - percentageStamina * ActionBarRun.STAMINA_BAR_SIZE);
+        if (staminaSize != lastStaminaSize) {
+            ActionBarRun.updateOnce(player);
+        }
+        lastStaminaSize = staminaSize;
     }
 }

@@ -63,7 +63,8 @@ public class WatchPlayer {
             done = true;
             return;
         }
-        if (player.getGameMode() != GameMode.SURVIVAL) {
+        final GameMode gameMode = player.getGameMode();
+        if (gameMode != GameMode.SURVIVAL && gameMode != GameMode.ADVENTURE) {
             // the player isn't in the correct gamemode
             lastChecked = System.currentTimeMillis();
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::doTemperature, NavigatePlayers.CHECK_TIME);

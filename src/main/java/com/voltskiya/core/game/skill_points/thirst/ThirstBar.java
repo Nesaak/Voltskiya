@@ -25,7 +25,8 @@ public class ThirstBar {
         if (!player.isOnline()) {
             return;
         }
-        if (player.getGameMode() != GameMode.SURVIVAL) {
+        final GameMode gameMode = player.getGameMode();
+        if (gameMode != GameMode.SURVIVAL && gameMode != GameMode.ADVENTURE) {
             scheduleDecrement(player);
             return;
         }

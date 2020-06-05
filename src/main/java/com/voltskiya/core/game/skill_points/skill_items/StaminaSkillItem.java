@@ -1,16 +1,15 @@
 package com.voltskiya.core.game.skill_points.skill_items;
 
 import com.voltskiya.core.game.GameTagsNavigate;
-import com.voltskiya.core.game.skill_points.UpdateSkills;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 
-public class ThirstSkillItem extends SkillItem {
-    private NamespacedKey key = GameTagsNavigate.SkillPointsTagsNavigate.skillMelee;
-    private static String displayName = "Thirst";
+public class StaminaSkillItem extends SkillItem {
+    private static final String DISPLAY_NAME = "Stamina";
+    private NamespacedKey key = GameTagsNavigate.SkillPointsTagsNavigate.skillStamina;
 
-    public ThirstSkillItem(Material itemType) {
+    public StaminaSkillItem(Material itemType) {
         super(itemType);
     }
 
@@ -30,6 +29,6 @@ public class ThirstSkillItem extends SkillItem {
 
     @Override
     public String getDisplayName() {
-        return displayName;
+        return DISPLAY_NAME;
     }
 }

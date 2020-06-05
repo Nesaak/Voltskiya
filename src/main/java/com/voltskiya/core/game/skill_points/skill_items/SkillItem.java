@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,7 @@ public abstract class SkillItem {
         return badXpCostMessage;
     }
 
-    public void dealWithClick(Player player) {
+    public void dealWithClick(Player player, ItemStack clickedItem) {
         @NotNull PersistentDataContainer container = player.getPersistentDataContainer();
         int newAttributeValue = getAttribute(player) + 1;
         container.set(getKey(), PersistentDataType.INTEGER, newAttributeValue);
@@ -33,6 +34,7 @@ public abstract class SkillItem {
         }
         player.setLevel(playerLevel - xpCost);
         dealWithUpdate(player);
+        clickedItem.setAmount(clickedItem.getAmount() + 1);
 
         player.sendMessage(ChatColor.GREEN + String.format("You've upgraded your %s to level %d!", getDisplayName(), newAttributeValue));
 

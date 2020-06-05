@@ -1,6 +1,5 @@
 package com.voltskiya.core.game.skill_points.thirst;
 
-import com.voltskiya.core.Voltskiya;
 import net.minecraft.server.v1_15_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -8,9 +7,10 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class DirtyWaterRecipe {
-    public DirtyWaterRecipe(Voltskiya plugin) {
+    public DirtyWaterRecipe(JavaPlugin plugin) {
         NamespacedKey key = new NamespacedKey(plugin, "dirty-water");
 
         net.minecraft.server.v1_15_R1.ItemStack potion = CraftItemStack.asNMSCopy(new ItemStack(Material.POTION));

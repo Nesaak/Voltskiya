@@ -43,7 +43,7 @@ public class ActionBarRun implements Listener {
         if (player.isOnline()) {
             TextComponent message = getMessage(player);
             ActionBar.sendLongActionBar(player, message);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> updateActionBar(player), 20);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> updateActionBar(player), 80);
         }
     }
 
@@ -71,7 +71,7 @@ public class ActionBarRun implements Listener {
         temperatureMessage.setText(String.format("(%s\u00B0C)", ((int) currentPlayerTemperature / 3)));
 
         double currentPlayerStamina = player.getPersistentDataContainer().getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.currentStamina, PersistentDataType.DOUBLE, 10D);
-        double maxPlayerStamina = player.getPersistentDataContainer().getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.skillStamina, PersistentDataType.DOUBLE, 0D) + 10;
+        double maxPlayerStamina = player.getPersistentDataContainer().getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.skillStamina, PersistentDataType.INTEGER, 0) + 10;
         double percentageStamina = currentPlayerStamina / maxPlayerStamina;
 
         short staminaSize = (short) (STAMINA_BAR_SIZE - percentageStamina * STAMINA_BAR_SIZE);

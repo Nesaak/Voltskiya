@@ -33,11 +33,11 @@ public class SkillPointsGUI implements InventoryHolder {
         SkillItem nothingItem = new NothingSkillItem(Material.AIR);
         clickableItems[0] = new VitalitySkillItem(Material.BEEF);
         clickableItems[1] = nothingItem;
-        clickableItems[2] = nothingItem;
-        clickableItems[3] = new MeleeSkillItem(Material.IRON_SWORD);
-        clickableItems[4] = nothingItem;
-        clickableItems[5] = new ThirstSkillItem(Material.POTION);
-        clickableItems[6] = nothingItem;
+        clickableItems[2] = new MeleeSkillItem(Material.IRON_SWORD);
+        clickableItems[3] = nothingItem;
+        clickableItems[4] = new StaminaSkillItem(Material.IRON_BLOCK);
+        clickableItems[5] = nothingItem;
+        clickableItems[6] = new ThirstSkillItem(Material.POTION);
         clickableItems[7] = nothingItem;
         clickableItems[8] = new SpeedSkillItem(Material.FEATHER);
     }
@@ -86,7 +86,15 @@ public class SkillPointsGUI implements InventoryHolder {
             if (whoClicked instanceof Player) {
                 final SkillItem clickableItem = clickableItems[slot];
                 if (!(clickableItem instanceof NothingSkillItem)) {
-                    clickableItem.dealWithClick((Player) whoClicked);
+                    Inventory clickedInventory = event.getClickedInventory();
+                    if (clickedInventory != null) {
+                        // should never be null
+                        ItemStack clickedItem = clickedInventory.getItem(slot);
+                        if (clickedItem != null && !clickedItem.getType().isAir())
+                            // should never be null
+                            clickableItem.dealWithClick((Player) whoClicked, clickedItem);
+
+                    }
                 }
             }
         }

@@ -24,7 +24,6 @@ public class TemperaturesModule extends VoltskiyaModule {
         NavigateArmor.initialize(dataFolder);
         NavigatePotions.initialize(dataFolder);
         NavigateResults.initialize(dataFolder);
-        ActionBar.initialize(plugin);
         IsWetCheck.initialize(plugin);
         new PlayerListener(plugin);
         Voltskiya.get().getCommandManager().registerCommand(new TemperatureCommands(dataFolder));

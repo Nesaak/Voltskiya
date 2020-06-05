@@ -33,7 +33,6 @@ public class GameTagsNavigate {
         public static NamespacedKey skillStamina;
         public static NamespacedKey currentThirst;
         public static NamespacedKey currentStamina;
-        public static NamespacedKey currentAir;
 
         public static void initialize(JavaPlugin plugin) {
             skillSpeed = new NamespacedKey(plugin, "skillSpeed");
@@ -43,7 +42,6 @@ public class GameTagsNavigate {
             skillStamina = new NamespacedKey(plugin, "skillStamina");
             currentThirst = new NamespacedKey(plugin, "currentThirst");
             currentStamina = new NamespacedKey(plugin, "currentStamina");
-            currentAir = new NamespacedKey(plugin, "currentAir");
         }
     }
 }

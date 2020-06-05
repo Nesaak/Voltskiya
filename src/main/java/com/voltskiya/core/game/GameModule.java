@@ -2,6 +2,7 @@ package com.voltskiya.core.game;
 
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.VoltskiyaModule;
+import com.voltskiya.core.game.actionbar.ActionBarMain;
 import com.voltskiya.core.game.bedTeleportScroll.BedTeleportMain;
 import com.voltskiya.core.game.disabledCrafting.DisabledCraftingMain;
 import com.voltskiya.core.game.enchantImmunity.ImmunityMain;
@@ -34,6 +35,7 @@ public class GameModule extends VoltskiyaModule {
         RespawnMain.enable(plugin, dataFolder);
         RottingMain.enable(plugin, dataFolder);
         SkillPointsMain.enable();
+        ActionBarMain.enable(plugin);
     }
 
     @Override

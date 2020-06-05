@@ -37,33 +37,32 @@ public class PlayerAirObject {
     private void doAirChange(Player player) {
         // reset the counter
         @NotNull PersistentDataContainer container = player.getPersistentDataContainer();
-        double currentAir = container.getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.currentStamina, PersistentDataType.DOUBLE, 10D);
+        double currentStamina = container.getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.currentStamina, PersistentDataType.DOUBLE, 10D);
         double maxStamina = container.getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.skillStamina, PersistentDataType.DOUBLE, 0D) + 10;
 
 
         while (!airToAttribute.isEmpty()) {
-            currentAir += airToAttribute.remove(0);
+            currentStamina += airToAttribute.remove(0);
         }
         float timeWaited = INCREMENT / TICKS_PER_DECREMENT;
         if (player.isSleeping()) {
-            currentAir += SLEEPING_MODIFIER * timeWaited;
+            currentStamina += SLEEPING_MODIFIER * timeWaited;
         } else if (player.isSneaking()) {
-            currentAir += SNEAKING_MODIFIER * timeWaited;
+            currentStamina += SNEAKING_MODIFIER * timeWaited;
         } else if (!player.isSprinting()) {
-            currentAir += WALKING_MOIDIFIER * timeWaited;
+            currentStamina += WALKING_MOIDIFIER * timeWaited;
         } else if (player.isSwimming()) {
-            currentAir += SWIMMING_MODIFIER * timeWaited;
+            currentStamina += SWIMMING_MODIFIER * timeWaited;
         } else {
-            currentAir += SPRINTING_MODIFIER * timeWaited;
+            currentStamina += SPRINTING_MODIFIER * timeWaited;
         }
 
         // normalize the air
-        if (currentAir < 0)
-            currentAir = 0D;
-        else if (currentAir > maxStamina) {
-            currentAir = maxStamina;
+        if (currentStamina < 0)
+            currentStamina = 0D;
+        else if (currentStamina > maxStamina) {
+            currentStamina = maxStamina;
         }
-        System.out.println(currentAir);
-        container.set(GameTagsNavigate.SkillPointsTagsNavigate.currentStamina, PersistentDataType.DOUBLE, currentAir);
+        container.set(GameTagsNavigate.SkillPointsTagsNavigate.currentStamina, PersistentDataType.DOUBLE, currentStamina);
     }
 }

@@ -1,4 +1,4 @@
-package com.voltskiya.core.temperatures;
+package com.voltskiya.core.game.actionbar;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;

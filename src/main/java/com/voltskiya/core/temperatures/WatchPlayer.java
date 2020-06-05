@@ -1,5 +1,6 @@
 package com.voltskiya.core.temperatures;
 
+import com.voltskiya.core.game.actionbar.ActionBar;
 import com.voltskiya.core.temperatures.constants.*;
 import com.voltskiya.core.temperatures.constants.biomes.BiomeWithWeatherMap;
 import com.voltskiya.core.temperatures.constants.biomes.NavigateBiomes;
@@ -167,38 +168,6 @@ public class WatchPlayer {
         thresholds.sort(Comparator.comparingInt(o -> o));
         for (Integer threshold : thresholds) {
             if (currentPlayerTemperature < threshold) {
-                if (currentPlayerTemperature < -110) {
-                    TextComponent message = new TextComponent(NavigatePlayers.veryColdMessage);
-                    message.setText(String.format(message.getText(), ((int) currentPlayerTemperature / 3)));
-                    ActionBar.sendLongActionBar(player, message);
-                } else if (currentPlayerTemperature < -25) {
-                    TextComponent message = new TextComponent(NavigatePlayers.coldMessage);
-                    message.setText(String.format(message.getText(), ((int) currentPlayerTemperature / 3)));
-                    ActionBar.sendLongActionBar(player, message);
-                } else if (currentPlayerTemperature < 40) {
-                    if (!oldPlayerThreshold.equals(threshold)) {
-                        ActionBar.remove(player);
-                        TextComponent message = new TextComponent(NavigatePlayers.normalMessage);
-                        message.setText(String.format(message.getText(), ((int) currentPlayerTemperature / 3)));
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, message);
-                    } else {
-                        TextComponent message = new TextComponent(NavigatePlayers.normalContinuedMessage);
-                        message.setText(String.format(message.getText(), ((int) currentPlayerTemperature / 3)));
-                        ActionBar.sendLongActionBar(player, message);
-                    }
-                } else if (currentPlayerTemperature < 120) {
-                    TextComponent message = new TextComponent(NavigatePlayers.hotMessage);
-                    message.setText(String.format(message.getText(), ((int) currentPlayerTemperature / 3)));
-                    ActionBar.sendLongActionBar(player, message);
-                } else {
-                    TextComponent message = new TextComponent(NavigatePlayers.veryHotMessage);
-                    message.setText(String.format(message.getText(), ((int) currentPlayerTemperature / 3)));
-                    ActionBar.sendLongActionBar(player, message);
-
-                }
-
-                oldPlayerThreshold = threshold;
-
                 // this is the effect to give to the player
                 Map<PotionEffectType, PotionInfo> results = NavigateResults.tempToResult.get(threshold).results;
                 for (PotionEffectType effect : results.keySet()) {

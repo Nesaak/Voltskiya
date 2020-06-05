@@ -32,6 +32,12 @@ public class NavigatePlayers {
     public static TextComponent veryColdMessage;
     public static TextComponent normalContinuedMessage;
 
+    public static ChatColor veryHotColor = ChatColor.DARK_RED;
+    public static ChatColor hotColor = ChatColor.RED;
+    public static ChatColor normalColor = ChatColor.WHITE;
+    public static ChatColor coldColor = ChatColor.DARK_AQUA;
+    public static ChatColor veryColdColor = ChatColor.DARK_BLUE;
+
     public static void initialize(JavaPlugin plugin, File dataFolder) {
         TEMPERATURE = new NamespacedKey(plugin, "current-temperature");
         LAST_WET = new NamespacedKey(plugin, "last-wet");

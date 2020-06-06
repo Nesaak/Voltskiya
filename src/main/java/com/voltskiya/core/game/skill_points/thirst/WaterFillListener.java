@@ -11,7 +11,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,18 +29,19 @@ public class WaterFillListener implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler
+    @EventHandler // listen to a cancel as well
+    // right clicking water without a block behind is considered canceled by minecraft for some reason
     public void onWaterFill(PlayerInteractEvent event) {
         final ItemStack itemInHand = event.getItem();
-        if (itemInHand == null) {
+        final Action action = event.getAction();
+        final EquipmentSlot hand = event.getHand();
+        if (hand == EquipmentSlot.OFF_HAND || action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK || itemInHand == null) {
+            // only right clicks with the main hand with the bottle are allowed
             return;
         }
+
         Material materialInHand = itemInHand.getType();
         if (materialInHand == Material.GLASS_BOTTLE) {
-            @Nullable Block clickedBlock = event.getClickedBlock();
-            if (clickedBlock == null)
-                return;
-
             Location playerLoc = event.getPlayer().getEyeLocation();
             World playerWorld = playerLoc.getWorld();
             if (playerWorld == null) return;

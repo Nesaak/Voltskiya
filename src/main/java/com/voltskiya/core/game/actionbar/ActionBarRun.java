@@ -6,6 +6,7 @@ import com.voltskiya.core.temperatures.constants.results.NavigateResults;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -48,8 +49,12 @@ public class ActionBarRun implements Listener {
     private void updateActionBar(Player player) {
         // stop when the player logs off
         if (player.isOnline()) {
-            TextComponent message = getMessage(player);
-            ActionBar.sendLongActionBar(player, message);
+            final GameMode gameMode = player.getGameMode();
+            if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
+                TextComponent message = getMessage(player);
+                ActionBar.sendLongActionBar(player, message);
+            } else
+                ActionBar.remove(player);
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> updateActionBar(player), 80);
         }
     }

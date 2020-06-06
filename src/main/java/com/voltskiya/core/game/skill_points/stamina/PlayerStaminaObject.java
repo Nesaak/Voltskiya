@@ -4,6 +4,7 @@ import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.game.GameTagsNavigate;
 import com.voltskiya.core.game.actionbar.ActionBarRun;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -37,6 +38,11 @@ public class PlayerStaminaObject {
     }
 
     private void doAirChange(Player player) {
+        final GameMode gameMode = player.getGameMode();
+        if (gameMode != GameMode.SURVIVAL && gameMode != GameMode.ADVENTURE)
+            return;
+
+
         // reset the counter
         @NotNull PersistentDataContainer container = player.getPersistentDataContainer();
         double currentStamina = container.getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.currentStamina, PersistentDataType.DOUBLE, 10D);

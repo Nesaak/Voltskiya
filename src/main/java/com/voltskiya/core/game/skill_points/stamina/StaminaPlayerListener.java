@@ -18,6 +18,6 @@ public class StaminaPlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void givePlayerStamina(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Voltskiya.get(), () -> new PlayerStaminaObject().doObjectAirTick(player), LOGIN_DELAY);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Voltskiya.get(), () -> new PlayerStaminaObject().doObjectSprintTick(player), LOGIN_DELAY);
     }
 }

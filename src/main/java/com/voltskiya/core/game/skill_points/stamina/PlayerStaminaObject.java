@@ -3,6 +3,7 @@ package com.voltskiya.core.game.skill_points.stamina;
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.game.GameTagsNavigate;
 import com.voltskiya.core.game.actionbar.ActionBarRun;
+import com.voltskiya.core.game.skill_points.no_sprint.NoSprint;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -16,10 +17,10 @@ public class PlayerStaminaObject {
     private static final short INCREMENT = 5;
     private static final float TICKS_PER_DECREMENT = 100F;
     private static final float SLEEPING_MODIFIER = 5F;
-    private static final float SNEAKING_MODIFIER = 1.5F;
+    private static final float SNEAKING_MODIFIER = 3F;
     private static final float WALKING_MOIDIFIER = 1.1F;
     private static final float SPRINTING_MODIFIER = -2F;
-    private static final float SWIMMING_MODIFIER = -0.75F;
+    private static final float SWIMMING_MODIFIER = -4F;
 
     private List<Double> airToAttribute = new ArrayList<>(5);
     private short lastStaminaSize = -1;
@@ -29,15 +30,15 @@ public class PlayerStaminaObject {
         this.airToAttribute.add(amount);
     }
 
-    public void doObjectAirTick(Player player) {
+    public void doObjectSprintTick(Player player) {
         if (!player.isOnline())
             return;
         // time to do air
-        doAirChange(player);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Voltskiya.get(), () -> doObjectAirTick(player), INCREMENT);
+        doSprintChange(player);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Voltskiya.get(), () -> doObjectSprintTick(player), INCREMENT);
     }
 
-    private void doAirChange(Player player) {
+    private void doSprintChange(Player player) {
         final GameMode gameMode = player.getGameMode();
         if (gameMode != GameMode.SURVIVAL && gameMode != GameMode.ADVENTURE)
             return;
@@ -77,6 +78,9 @@ public class PlayerStaminaObject {
         if (staminaSize != lastStaminaSize) {
             ActionBarRun.updateOnce(player);
         }
+            NoSprint.sprint(player,currentStamina);
+
+
         lastStaminaSize = staminaSize;
     }
 }

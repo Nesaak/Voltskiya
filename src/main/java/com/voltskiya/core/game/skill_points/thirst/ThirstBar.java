@@ -2,6 +2,7 @@ package com.voltskiya.core.game.skill_points.thirst;
 
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.game.GameTagsNavigate;
+import com.voltskiya.core.game.skill_points.no_sprint.NoSprint;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.attribute.Attribute;
@@ -17,8 +18,8 @@ import java.util.Collection;
 
 public class ThirstBar {
     private static final String THIRST_MODIFIER = "thirst";
-    private static final long CHECK_INCREMENT = 10; //in ticks
-    private static final int TICKS_PER_THIRST = 100;
+    private static final long CHECK_INCREMENT = 100; //in ticks
+    private static final int TICKS_PER_THIRST = 300;
     private static final Object drinkingSync = new Object();
 
     private static void calcAndDecrement(@NotNull Player player) {
@@ -38,6 +39,7 @@ public class ThirstBar {
             if (newThirst < 0)
                 newThirst = 0;
             container.set(GameTagsNavigate.SkillPointsTagsNavigate.currentThirst, PersistentDataType.DOUBLE, newThirst);
+            NoSprint.thirst(player, newThirst);
             setThirstBar(player, newThirst / totalThirst);
             scheduleDecrement(player);
         }
@@ -53,8 +55,10 @@ public class ThirstBar {
             // idk what to do
             return;
         removeThirstModifier(genericArmor);
+        short thirstBar = (short) Math.round(thirstPercentage * 20);
+
         genericArmor.addModifier(new AttributeModifier(THIRST_MODIFIER,
-                thirstPercentage * 20 - genericArmor.getValue(),
+                thirstBar - genericArmor.getValue(),
                 AttributeModifier.Operation.ADD_NUMBER));
     }
 

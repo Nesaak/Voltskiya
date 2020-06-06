@@ -1,14 +1,10 @@
 package com.voltskiya.core.game.skill_points.thirst;
 
-import com.google.common.base.Function;
 import com.voltskiya.core.Voltskiya;
 import net.minecraft.server.v1_15_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,10 +12,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 
 public class ThirstDamageListener implements Listener {
     public ThirstDamageListener(JavaPlugin plugin) {
@@ -27,6 +21,7 @@ public class ThirstDamageListener implements Listener {
     }
 
     //I'm first because I want to change the modifier before other's might use it
+    @SuppressWarnings("deprecation")
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onDamageFirst(EntityDamageEvent event) {
         final Entity entity = event.getEntity();

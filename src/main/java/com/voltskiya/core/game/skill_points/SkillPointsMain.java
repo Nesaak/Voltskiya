@@ -3,6 +3,7 @@ package com.voltskiya.core.game.skill_points;
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.game.skill_points.inventory.SkillPointClickListener;
 import com.voltskiya.core.game.skill_points.listeners.SkillPointsPlayerJoin;
+import com.voltskiya.core.game.skill_points.no_sprint.HungerListener;
 import com.voltskiya.core.game.skill_points.stamina.StaminaPlayerListener;
 import com.voltskiya.core.game.skill_points.thirst.DirtyWaterRecipe;
 import com.voltskiya.core.game.skill_points.thirst.ThirstDamageListener;
@@ -21,6 +22,7 @@ public class SkillPointsMain {
         new WaterFillListener(plugin);
         new DirtyWaterRecipe(plugin);
         new StaminaPlayerListener(plugin);
+        new HungerListener(plugin);
     }
 
 }

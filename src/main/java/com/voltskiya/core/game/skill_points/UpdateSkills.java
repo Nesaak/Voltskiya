@@ -40,14 +40,14 @@ public class UpdateSkills {
 
 
     private static double getSpeed(int speedSkill) {
-        return .1; // normal is ???
+        return Math.max(2, ((double) speedSkill) / 25); // normal is ???
     }
 
     private static double getMelee(int melee) {
-        return 5; // normal is ???
+        return ((double) melee) / 5; // normal is ???
     }
 
-    private static double getVitality(int melee) {
-        return 2 + melee; // normal is 20
+    private static double getVitality(int vitality) {
+        return ((double) vitality) / 5; // normal is 20
     }
 }

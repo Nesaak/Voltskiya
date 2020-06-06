@@ -24,7 +24,6 @@ public abstract class SkillItem {
     public void dealWithClick(Player player, ItemStack clickedItem) {
         @NotNull PersistentDataContainer container = player.getPersistentDataContainer();
         int newAttributeValue = getAttribute(player) + 1;
-        container.set(getKey(), PersistentDataType.INTEGER, newAttributeValue);
         final int xpCost = getXpCost(newAttributeValue - 1);
         final int playerLevel = player.getLevel();
 
@@ -35,6 +34,7 @@ public abstract class SkillItem {
         player.setLevel(playerLevel - xpCost);
         dealWithUpdate(player);
         clickedItem.setAmount(clickedItem.getAmount() + 1);
+        container.set(getKey(), PersistentDataType.INTEGER, newAttributeValue);
 
         player.sendMessage(ChatColor.GREEN + String.format("You've upgraded your %s to level %d!", getDisplayName(), newAttributeValue));
 

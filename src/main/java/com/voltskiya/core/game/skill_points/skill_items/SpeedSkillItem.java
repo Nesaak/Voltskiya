@@ -26,7 +26,7 @@ public class SpeedSkillItem extends SkillItem {
 
     @Override
     public int getXpCost(int newAttributeValue) {
-        return 1;
+        return (int) Math.pow(7+newAttributeValue,1.37);
     }
 
     @Override

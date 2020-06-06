@@ -40,7 +40,7 @@ public class PlayerStaminaObject {
         // reset the counter
         @NotNull PersistentDataContainer container = player.getPersistentDataContainer();
         double currentStamina = container.getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.currentStamina, PersistentDataType.DOUBLE, 10D);
-        double maxStamina = container.getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.skillStamina, PersistentDataType.DOUBLE, 0D) + 10;
+        double maxStamina = container.getOrDefault(GameTagsNavigate.SkillPointsTagsNavigate.skillStamina, PersistentDataType.INTEGER, 0) + 10;
 
 
         while (!airToAttribute.isEmpty()) {

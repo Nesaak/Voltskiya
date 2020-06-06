@@ -24,7 +24,7 @@ public class StaminaSkillItem extends SkillItem {
 
     @Override
     public int getXpCost(int newAttributeValue) {
-        return newAttributeValue;
+        return (int) Math.pow(7+newAttributeValue,1.37);
     }
 
     @Override

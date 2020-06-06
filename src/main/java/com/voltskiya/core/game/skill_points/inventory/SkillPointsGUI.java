@@ -44,6 +44,10 @@ public class SkillPointsGUI implements InventoryHolder {
 
     public SkillPointsGUI(Player player) {
         myInventory = Bukkit.createInventory(this, clickableItems.length, "Skill Points");
+        setGUI(player, myInventory);
+    }
+
+    public static void setGUI(Player player, Inventory myInventory) {
         // 0 1 2 3 4 5 6 7 8 - item slots
         for (int i = 0; i < clickableItems.length; i++) {
             final SkillItem clickableItem = clickableItems[i];
@@ -75,7 +79,6 @@ public class SkillPointsGUI implements InventoryHolder {
             myInventory.setItem(i, item);
         }
         player.openInventory(myInventory);
-
     }
 
     public static void dealWithClick(InventoryClickEvent event) {
@@ -92,8 +95,7 @@ public class SkillPointsGUI implements InventoryHolder {
                         ItemStack clickedItem = clickedInventory.getItem(slot);
                         if (clickedItem != null && !clickedItem.getType().isAir())
                             // should never be null
-                            clickableItem.dealWithClick((Player) whoClicked, clickedItem);
-
+                            clickableItem.dealWithClick((Player) whoClicked, clickedInventory);
                     }
                 }
             }

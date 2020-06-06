@@ -1,9 +1,11 @@
 package com.voltskiya.core.game.skill_points.skill_items;
 
+import com.voltskiya.core.game.skill_points.inventory.SkillPointsGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -21,7 +23,7 @@ public abstract class SkillItem {
         return badXpCostMessage;
     }
 
-    public void dealWithClick(Player player, ItemStack clickedItem) {
+    public void dealWithClick(Player player, Inventory clickedInventory) {
         @NotNull PersistentDataContainer container = player.getPersistentDataContainer();
         int newAttributeValue = getAttribute(player) + 1;
         final int xpCost = getXpCost(newAttributeValue - 1);
@@ -33,8 +35,8 @@ public abstract class SkillItem {
         }
         player.setLevel(playerLevel - xpCost);
         dealWithUpdate(player);
-        clickedItem.setAmount(clickedItem.getAmount() + 1);
         container.set(getKey(), PersistentDataType.INTEGER, newAttributeValue);
+        SkillPointsGUI.setGUI(player,clickedInventory);
 
         player.sendMessage(ChatColor.GREEN + String.format("You've upgraded your %s to level %d!", getDisplayName(), newAttributeValue));
 

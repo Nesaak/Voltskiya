@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import static com.voltskiya.core.game.skill_points.SkillPointsUtils.removeModifier;
 import static org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER;
 
 /**
@@ -83,9 +84,4 @@ public class UpdateSkills {
     private static double getVitality(int vitality) {
         return ((double) vitality) / 5; // normal is 20
     }
-
-    private static void removeModifier(AttributeInstance attribute) {
-        attribute.getModifiers().removeIf(modifier -> modifier.getName().equals(UpdateSkills.SKILL_MODIFIER_NAME));
-    }
-
 }

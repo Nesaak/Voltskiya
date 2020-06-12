@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PaintersGraphics extends JFrame {
-    public static final int WIDTH = 1000;
+    public static final int WIDTH = 420;
     PaintersWorld world;
     Map<String, Color> colors = new HashMap<>();
     Map<UUID, Location> mobs = new ConcurrentHashMap<>();
@@ -96,7 +96,7 @@ public class PaintersGraphics extends JFrame {
         rangeZ /= WIDTH;
         rangeX++;
         rangeZ++;
-        int range = Math.max(rangeX, rangeZ);
+        final int range = Math.max(rangeX, rangeZ);
 
         Set<String> biomesNotDone = new HashSet<>();
         Biome[] biomes = Biome.values();
@@ -115,6 +115,7 @@ public class PaintersGraphics extends JFrame {
                     if (color.equals(black))
                         biomesNotDone.add(biome);
                     g.setColor(color);
+                    System.out.println(finalX + " , " + finalZ);
                     g.drawLine(finalX, finalZ, finalX, finalZ);
                 }
             }
@@ -130,7 +131,6 @@ public class PaintersGraphics extends JFrame {
             g.drawLine(x - 1, z - 1, x - 1, z + 1);
         }
         g.setColor(black);
-        g.drawLine(5, 500, 50, 200);
 
         for (String biome : biomesNotDone) {
             System.out.println(String.format("colors.put(\"%s\", new Color(0, 0, 0));", biome));

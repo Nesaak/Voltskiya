@@ -8,10 +8,8 @@ import co.aikar.commands.annotation.Subcommand;
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.common.Permission;
 import com.voltskiya.core.mobs.commands.paint.PaintWorld;
-import org.bukkit.Bukkit;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.Location;
-import org.bukkit.World;
+import com.voltskiya.core.mobs.scan.HardScan;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -26,15 +24,22 @@ import java.util.UUID;
 public class PaintWorldCommand extends BaseCommand {
     @CommandPermission(Permission.WORLD_READING)
     @Subcommand("load everything")
-    public void loadEverything() {
-        World world = Bukkit.getWorld("world");
+    public void loadEverything(Player player) {
+        World world = player.getWorld();
+        @NotNull WorldBorder border = world.getWorldBorder();
+        @NotNull Location borderCenter = border.getCenter();
+        double size = border.getSize();
+        final int lowerX = (int) (borderCenter.getX() - size) / 16;
+        final int lowerZ = (int) (borderCenter.getZ() - size) / 16;
+        final int higherX = (int) (borderCenter.getX() + size) / 16;
+        final int higherZ = (int) (borderCenter.getZ() + size) / 16;
         int i = 0;
-        for (int x = -125; x < 105; x += 4) {
-            for (int z = -78; z < 123; z += 4) {
+        for (int x = lowerX; x < higherX; x += 4) {
+            for (int z = lowerZ; z < higherZ; z += 4) {
                 int finalX = x;
                 int finalZ = z;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(Voltskiya.get(), () -> {
-                    if (finalZ == -78) Bukkit.broadcastMessage(String.valueOf(finalX));
+                    if (finalZ == lowerZ) Bukkit.broadcastMessage(String.valueOf(finalX));
                     List<ChunkSnapshot> chunks = new ArrayList<>(17);
                     for (int xi = 0; xi < 4; xi++) {
                         for (int zi = 0; zi < 4; zi++) {
@@ -73,15 +78,24 @@ public class PaintWorldCommand extends BaseCommand {
 
     }
 
-    @CommandPermission(Permission.WORLD_READING)
-    @Subcommand("spawn mob custom")
-    public void spawnCustomMob(Player player, @Single String arg) {
-        Location location = player.getLocation();
-        World world = location.getWorld();
-        Entity spawned = world.spawnEntity(location, EntityType.ARMOR_STAND);
-        spawned.setCustomName(arg);
-        UUID uid = spawned.getUniqueId();
-        PaintWorld.drawMob(location, uid);
+    @Subcommand("hardScan")
+    public void hardScan(Player player) {
+        World worldToScan = player.getWorld();
+        @NotNull WorldBorder border = worldToScan.getWorldBorder();
+        @NotNull Location borderCenter = border.getCenter();
+        double size = border.getSize();
+        short lowerX = (short) ((borderCenter.getX() - size) / 16);
+        short lowerZ = (short) ((borderCenter.getZ() - size) / 16);
+        short higherX = (short) ((borderCenter.getX() + size) / 16);
+        short higherZ = (short) ((borderCenter.getZ() + size) / 16);
+
+        for (short x = lowerX; x < higherX; x++) {
+            for (short z = lowerZ; z < higherZ; z++) {
+                ChunkSnapshot chunk = worldToScan.getChunkAt(x, z).getChunkSnapshot();
+                HardScan.scan(chunk, lowerX, lowerZ);
+            }
+        }
+
 
     }
 }

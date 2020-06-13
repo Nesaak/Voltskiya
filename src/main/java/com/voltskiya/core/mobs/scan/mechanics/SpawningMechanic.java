@@ -5,6 +5,7 @@ import com.voltskiya.core.mobs.scan.rules.SpawningRule;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * is a list of spawning rules
@@ -26,10 +27,14 @@ public abstract class SpawningMechanic {
      */
     public boolean isSpawnable(String mob, SpawningEnvironment environment) {
         SpawningRule rule = spawningRules.get(mob);
-        return rule != null && rule.isSpawnable(mob, environment);
+        return rule != null && rule.isSpawnable(environment);
     }
 
-    protected void addRule(String mob, SpawningRule rule) {
+    protected void putRule(String mob, SpawningRule rule) {
         spawningRules.put(mob, rule);
+    }
+
+    public Set<String> getSpawnableMobs() {
+        return spawningRules.keySet();
     }
 }

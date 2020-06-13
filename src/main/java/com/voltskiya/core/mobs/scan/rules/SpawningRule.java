@@ -6,5 +6,11 @@ import com.voltskiya.core.mobs.scan.SpawningEnvironment;
  * is a rule for if a certain mob can spawn
  */
 public abstract class SpawningRule {
-    public abstract boolean isSpawnable(String mob, SpawningEnvironment environment);
+    /**
+     * The biome nor the mob is verified in this method
+     *
+     * @param environment the environment that is in question of whether it can spawn something
+     * @return whether the mob would be allowed to spawn in this environment
+     */
+    public abstract boolean isSpawnable(SpawningEnvironment environment);
 }

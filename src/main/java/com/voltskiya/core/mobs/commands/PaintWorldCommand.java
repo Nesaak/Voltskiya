@@ -91,7 +91,7 @@ public class PaintWorldCommand extends BaseCommand {
 
         for (short x = lowerX; x < higherX; x++) {
             for (short z = lowerZ; z < higherZ; z++) {
-                ChunkSnapshot chunk = worldToScan.getChunkAt(x, z).getChunkSnapshot();
+                ChunkSnapshot chunk = worldToScan.getChunkAt(x, z).getChunkSnapshot(true,true,false);
                 HardScan.scan(chunk, lowerX, lowerZ);
             }
         }

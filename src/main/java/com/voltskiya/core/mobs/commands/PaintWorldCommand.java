@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@CommandAlias("test")
+@CommandAlias("mobs")
 public class PaintWorldCommand extends BaseCommand {
     @CommandPermission(Permission.WORLD_READING)
     @Subcommand("load everything")
@@ -78,24 +78,42 @@ public class PaintWorldCommand extends BaseCommand {
 
     }
 
-    @Subcommand("hardScan")
-    public void hardScan(Player player) {
-        World worldToScan = player.getWorld();
-        @NotNull WorldBorder border = worldToScan.getWorldBorder();
-        @NotNull Location borderCenter = border.getCenter();
-        double size = border.getSize();
-        short lowerX = (short) ((borderCenter.getX() - size) / 16);
-        short lowerZ = (short) ((borderCenter.getZ() - size) / 16);
-        short higherX = (short) ((borderCenter.getX() + size) / 16);
-        short higherZ = (short) ((borderCenter.getZ() + size) / 16);
+    @Subcommand("scan")
+    public class Scan extends BaseCommand {
+        private static final byte CHUNK_SCAN_INCREMENT = 5;
 
-        for (short x = lowerX; x < higherX; x++) {
-            for (short z = lowerZ; z < higherZ; z++) {
-                ChunkSnapshot chunk = worldToScan.getChunkAt(x, z).getChunkSnapshot(true,true,false);
-                HardScan.scan(chunk, lowerX, lowerZ);
+        @Subcommand("hard")
+        public void hardScan(Player player) {
+            World worldToScan = player.getWorld();
+            @NotNull WorldBorder border = worldToScan.getWorldBorder();
+            @NotNull Location borderCenter = border.getCenter();
+            double size = border.getSize();
+            short lowerX = (short) ((borderCenter.getX() - size) / 16);
+            short lowerZ = (short) ((borderCenter.getZ() - size) / 16);
+            short higherX = (short) ((borderCenter.getX() + size) / 16);
+            short higherZ = (short) ((borderCenter.getZ() + size) / 16);
+
+            int counter = 0;
+            for (short x = lowerX; x < higherX; x += CHUNK_SCAN_INCREMENT) {
+                for (short z = lowerZ; z < higherZ; z += CHUNK_SCAN_INCREMENT) {
+                    short finalX = x;
+                    short finalZ = z;
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(Voltskiya.get(), () -> {
+                                final ChunkSnapshot[][] chunks = new ChunkSnapshot[CHUNK_SCAN_INCREMENT][CHUNK_SCAN_INCREMENT];
+                                for (byte xi = 0; xi < CHUNK_SCAN_INCREMENT; xi++) {
+                                    for (byte zi = 0; zi < CHUNK_SCAN_INCREMENT; zi++) {
+                                        chunks[xi][zi] = worldToScan.getChunkAt(finalX + xi, finalZ + zi).getChunkSnapshot(true, true, false);
+
+                                    }
+                                }
+                                HardScan.scan(chunks, CHUNK_SCAN_INCREMENT);
+                                if (finalZ == lowerZ) System.out.println(finalX + "/" + higherX);
+                            }
+                            , counter += CHUNK_SCAN_INCREMENT
+                    );
+                }
             }
         }
-
 
     }
 }

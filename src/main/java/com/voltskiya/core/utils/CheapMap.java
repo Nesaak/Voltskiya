@@ -157,6 +157,6 @@ public class CheapMap<K, V> implements Map<K, V> {
     @NotNull
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return new HashSet<>(Arrays.asList(contents));
+        return contents == null ? Collections.emptySet() : new HashSet<>(Arrays.asList(contents));
     }
 }

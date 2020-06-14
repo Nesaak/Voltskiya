@@ -4,6 +4,7 @@ import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.VoltskiyaModule;
 import com.voltskiya.core.mobs.commands.PaintWorldCommand;
 import com.voltskiya.core.mobs.commands.paint.PaintWorld;
+import com.voltskiya.core.mobs.scan.HardScan;
 
 import java.io.File;
 
@@ -15,6 +16,7 @@ public class MobsModule extends VoltskiyaModule {
         if (!worldDataFolder.exists()) worldDataFolder.mkdir();
         Voltskiya plugin = Voltskiya.get();
         PaintWorld.initialize(worldDataFolder);
+        HardScan.initialize(dataFolder);
         plugin.getCommandManager().registerCommand(new PaintWorldCommand());
 
     }

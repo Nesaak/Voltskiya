@@ -20,8 +20,7 @@ public class HardScan {
     // this is all static because I don't want to need the reference to the object to run scan()
 
     private static final int SEARCH_DEPTH = 10;
-    private static final String MOB_COUNT_FOLDER = "mobCount";
-    private static File mainFolder;
+    private static File mobCountFolder;
 
 
     private static Map<Biome, SpawningMechanic> biomeToRules = new HashMap<>();
@@ -33,11 +32,11 @@ public class HardScan {
     private static final Gson gson = new Gson();
 
     public static void initialize(File folder) {
-        mainFolder = folder;
+        mobCountFolder = folder;
     }
 
     /**
-     * write to the disk how many mobs of each type can spawn in each type of map
+     * write to the disk how many mobs of each type can spawn in each group of chunks
      *
      * @param chunks       a grid of c
      * @param chunksLength the length the square grid: chunks
@@ -114,7 +113,7 @@ public class HardScan {
             }
             outerArray.add(innerArray);
         }
-        File fileToWrite = new File(mainFolder + File.separator + MOB_COUNT_FOLDER + File.separator + String.format("%s#%d#%d.json", worldName, x, z));
+        File fileToWrite = new File(mobCountFolder, String.format("%s#%d#%d.json", worldName, x, z));
         if (!fileToWrite.exists()) fileToWrite.createNewFile();
         final FileWriter writer = new FileWriter(fileToWrite);
         gson.toJson(outerArray, writer);

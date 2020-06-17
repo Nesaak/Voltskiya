@@ -20,6 +20,7 @@ public class HardScan {
     // this is all static because I don't want to need the reference to the object to run scan()
 
     private static final int SEARCH_DEPTH = 10;
+    private static final Gson gson = new Gson();
     private static File mobCountFolder;
 
 
@@ -29,7 +30,6 @@ public class HardScan {
         biomeToRules.put(Biome.GIANT_TREE_TAIGA, new MechanicForestFloor());
     }
 
-    private static final Gson gson = new Gson();
 
     public static void initialize(File folder) {
         mobCountFolder = folder;
@@ -97,6 +97,7 @@ public class HardScan {
         } catch (IOException e) {
             System.err.println(String.format("Could not write chunk group %s,%d,%d", worldName, x, z));
         }
+        chunksToMobArea = null; // encourage the garbage collector to remove this object
     }
 
     private static void save(Map<String, Short>[][] chunksToMobArea, String worldName, int x, int z) throws IOException {

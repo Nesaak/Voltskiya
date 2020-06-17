@@ -1,4 +1,4 @@
-package com.voltskiya.core.mobs.commands.paint;
+package com.voltskiya.core.mobs.paint;
 
 import org.bukkit.ChunkSnapshot;
 

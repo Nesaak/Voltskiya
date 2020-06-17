@@ -1,4 +1,4 @@
-package com.voltskiya.core.mobs.commands;
+package com.voltskiya.core.mobs;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
@@ -6,24 +6,22 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.common.Permission;
-import com.voltskiya.core.mobs.commands.paint.PaintWorld;
+import com.voltskiya.core.mobs.paint.PaintWorld;
 import com.voltskiya.core.mobs.scan.HardScan;
-import com.voltskiya.core.mobs.scan.SoftScan;
-import jdk.jfr.internal.Logger;
+import com.voltskiya.core.mobs.scan.RefactorHardScan;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @CommandAlias("mobs")
-public class PaintWorldCommand extends BaseCommand {
+public class MobsCommand extends BaseCommand {
     @CommandPermission(Permission.WORLD_READING)
     @Subcommand("load everything")
     public void loadEverything(Player player) {
@@ -116,12 +114,12 @@ public class PaintWorldCommand extends BaseCommand {
                 }
             }
             //todo replace all Voltskiya.get() with plugin
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Voltskiya.get(), SoftScan::scan, counter);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Voltskiya.get(), RefactorHardScan::scan, counter);
         }
 
         @Subcommand("soft")
         public void softScan() {
-            SoftScan.scan();
+
         }
 
     }

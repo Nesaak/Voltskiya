@@ -3,7 +3,6 @@ package com.voltskiya.core.mobs.scan;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.voltskiya.core.Voltskiya;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,6 +11,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import static com.voltskiya.core.mobs.MobsCommand.CHUNK_SCAN_INCREMENT;
+
 public class RefactorHardScan {
     private static JavaPlugin plugin;
     private static final Gson gson = new Gson();
@@ -19,8 +20,8 @@ public class RefactorHardScan {
     private static File hardScanFolder;
     private static File hardScanRefactoredFolder;
 
-    private static Map<String, Integer> mobCount = new ConcurrentHashMap<>();
     private static Map<String, List<Integer>> chunkToMobCount = new ConcurrentHashMap<>();
+    private static Collection<Integer> singleMobCountEmpty;
 
     public static void initialize(JavaPlugin pl, File hardScan, File hardScanRefactored) {
         plugin = pl;
@@ -34,11 +35,13 @@ public class RefactorHardScan {
             plugin.getLogger().log(Level.SEVERE, "Hardscan needs to finish before refactoring Hardscan!");
             return;
         }
+        singleMobCountEmpty = Collections.nCopies(mobCountPaths.length * CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT, 0);
         int i = 0;
         for (; i < mobCountPaths.length; i++) {
-            BufferedReader mobCountReader;
+            final BufferedReader mobCountReader;
+            final File mobCountFile = new File(hardScanFolder, mobCountPaths[i]);
             try {
-                mobCountReader = new BufferedReader(new FileReader(new File(hardScanFolder, mobCountPaths[i])));
+                mobCountReader = new BufferedReader(new FileReader(mobCountFile));
             } catch (FileNotFoundException e) {
                 // this probably never happened
                 continue;
@@ -46,22 +49,27 @@ public class RefactorHardScan {
             int finalI = i;
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 JsonArray mobCounts = new Gson().fromJson(mobCountReader, JsonArray.class);
-                addFileContents(mobCounts);
+                addFileContents(mobCounts, finalI);
                 try {
                     mobCountReader.close();
+//        todo            mobCountFile.delete(); // get rid of the temporary file
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 System.out.println(finalI + "/" + mobCountPaths.length);
             }, i);
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> System.out.println(Arrays.toString(mobCount.entrySet().toArray())), i);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, RefactorHardScan::write, i);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            mobCount = null;
-            chunkToMobCount = null;
+            chunkToMobCount = new ConcurrentHashMap<>();
         }, i + 1);
-
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            try {
+                SoftScan.scan();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }, i + 2);
     }
 
     private static void write() {
@@ -72,7 +80,7 @@ public class RefactorHardScan {
                 File mobFile = new File(hardScanRefactoredFolder, mobPath);
                 if (mobFile.exists()) mobFile.delete();
             }
-            // write the really empty file for this mob
+            // write the file for this mob
             for (Map.Entry<String, List<Integer>> mob : chunkToMobCount.entrySet()) {
                 File mobFile = new File(hardScanRefactoredFolder, mob.getKey() + ".json");
                 try {
@@ -81,10 +89,10 @@ public class RefactorHardScan {
                     JsonArray jsonSingleMobCount = new JsonArray();
                     for (Integer i : mob.getValue())
                         jsonSingleMobCount.add(i);
-                    writer.write(gson.toJson(jsonSingleMobCount));
+                    gson.toJson(jsonSingleMobCount, writer);
                     writer.close();
                 } catch (IOException e) {
-                    plugin.getLogger().log(Level.SEVERE, String.format("The file for the hardScanRefctored %s could not be written to correctly", mob.getKey()));
+                    plugin.getLogger().log(Level.SEVERE, String.format("The file for the hardScanRefactored %s could not be written to correctly", mob.getKey()));
                 }
             }
         } else {
@@ -92,16 +100,18 @@ public class RefactorHardScan {
         }
     }
 
-    private static void addFileContents(JsonArray mobCountIndividual) {
+    private static void addFileContents(JsonArray mobCountIndividual, int majorIndex) {
+        majorIndex *= CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT;
+        int subIndex = 0;
         for (JsonElement insideArray : mobCountIndividual) {
             for (JsonElement insideMap : insideArray.getAsJsonArray()) {
                 for (Map.Entry<String, JsonElement> entry : insideMap.getAsJsonObject().entrySet()) {
                     final int mobCountSingle = entry.getValue().getAsInt();
                     final String mob = entry.getKey();
-                    mobCount.put(mob, mobCount.getOrDefault(mob, 0) + mobCountSingle);
-                    List<Integer> chunkToSingleMobCount = chunkToMobCount.computeIfAbsent(mob, k -> Collections.synchronizedList(new ArrayList<>()));
-                    chunkToSingleMobCount.add(mobCountSingle);
+                    List<Integer> chunkToSingleMobCount = chunkToMobCount.computeIfAbsent(mob, k -> Collections.synchronizedList(new ArrayList<>(singleMobCountEmpty)));
+                    chunkToSingleMobCount.set(subIndex + majorIndex, mobCountSingle);
                 }
+                subIndex++;
             }
         }
     }

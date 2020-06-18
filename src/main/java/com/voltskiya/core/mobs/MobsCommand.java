@@ -9,6 +9,7 @@ import com.voltskiya.core.common.Permission;
 import com.voltskiya.core.mobs.paint.PaintWorld;
 import com.voltskiya.core.mobs.scan.HardScan;
 import com.voltskiya.core.mobs.scan.RefactorHardScan;
+import com.voltskiya.core.mobs.scan.SoftScan;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -22,6 +23,14 @@ import java.util.UUID;
 
 @CommandAlias("mobs")
 public class MobsCommand extends BaseCommand {
+    public static final byte CHUNK_SCAN_INCREMENT = 5;
+
+    private static Voltskiya plugin;
+
+    public static void initialize(Voltskiya pl) {
+        plugin = pl;
+    }
+
     @CommandPermission(Permission.WORLD_READING)
     @Subcommand("load everything")
     public void loadEverything(Player player) {
@@ -38,7 +47,7 @@ public class MobsCommand extends BaseCommand {
             for (int z = lowerZ; z < higherZ; z += 4) {
                 int finalX = x;
                 int finalZ = z;
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Voltskiya.get(), () -> {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                     if (finalZ == lowerZ) Bukkit.broadcastMessage(String.valueOf(finalX));
                     List<ChunkSnapshot> chunks = new ArrayList<>(17);
                     for (int xi = 0; xi < 4; xi++) {
@@ -80,7 +89,7 @@ public class MobsCommand extends BaseCommand {
 
     @Subcommand("scan")
     public class Scan extends BaseCommand {
-        private static final byte CHUNK_SCAN_INCREMENT = 5;
+        private static final int CHUNK_SCAN_INCREMENT_TIME = 5;
 
         @Subcommand("hard")
         public void hardScan(Player player) {
@@ -93,12 +102,12 @@ public class MobsCommand extends BaseCommand {
             short higherX = (short) ((borderCenter.getX() + size) / 16);
             short higherZ = (short) ((borderCenter.getZ() + size) / 16);
 
-            int counter = 0;
+            int delayCounter = 0;
             for (short x = lowerX; x < higherX; x += CHUNK_SCAN_INCREMENT) {
                 for (short z = lowerZ; z < higherZ; z += CHUNK_SCAN_INCREMENT) {
                     short finalX = x;
                     short finalZ = z;
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(Voltskiya.get(), () -> {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                                 final ChunkSnapshot[][] chunks = new ChunkSnapshot[CHUNK_SCAN_INCREMENT][CHUNK_SCAN_INCREMENT];
                                 for (byte xi = 0; xi < CHUNK_SCAN_INCREMENT; xi++) {
                                     for (byte zi = 0; zi < CHUNK_SCAN_INCREMENT; zi++) {
@@ -109,17 +118,20 @@ public class MobsCommand extends BaseCommand {
                                 HardScan.scan(chunks, CHUNK_SCAN_INCREMENT);
                                 if (finalZ == lowerZ) System.out.println(finalX + "/" + higherX);
                             }
-                            , counter += CHUNK_SCAN_INCREMENT
+                            , delayCounter += CHUNK_SCAN_INCREMENT_TIME
                     );
                 }
             }
-            //todo replace all Voltskiya.get() with plugin
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Voltskiya.get(), RefactorHardScan::scan, counter);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, RefactorHardScan::scan, delayCounter + 1); // this scan will call the next scan when it's finished
         }
 
         @Subcommand("soft")
         public void softScan() {
-
+            try {
+                SoftScan.scan();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }

@@ -4,7 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Biome;
 
 /**
- * just a class to hold data
+ * just a class to hold data about the environment
  */
 public class SpawningEnvironment {
     public final Biome biome;

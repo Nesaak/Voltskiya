@@ -19,12 +19,12 @@ import java.util.*;
 public class HardScan {
     // this is all static because I don't want to need the reference to the object to run scan()
 
-    private static final int SEARCH_DEPTH = 10;
+    public static final int SEARCH_DEPTH = 10;
     private static final Gson gson = new Gson();
     private static File mobCountFolder;
 
 
-    private static Map<Biome, SpawningMechanic> biomeToRules = new HashMap<>();
+    public static Map<Biome, SpawningMechanic> biomeToRules = new HashMap<>();
 
     static {
         biomeToRules.put(Biome.GIANT_TREE_TAIGA, new MechanicForestFloor());
@@ -63,8 +63,8 @@ public class HardScan {
 
                         // start at the highest y
                         int y = chunk.getHighestBlockYAt(x, z);
-                        int timesSolid = 0;
-
+                        short timesSolid = 0;
+                        short emptySpace = 10000; // there is a lot of spcae above
                         // keep looking down y column until we hit a solid block SEARCH_DEPTH times in a row or until we hit the bottom of the world
                         while (y > 0 && timesSolid < SEARCH_DEPTH) {
                             y--;
@@ -75,12 +75,19 @@ public class HardScan {
                                 // if the we're at a surface of a section of blocks
                                 if (timesSolid++ == 0) {
                                     SpawningMechanic mechanic = biomeToRules.get(biome);
-                                    if (mechanic != null)
-                                        for (String mobName : mechanic.getSpawnableMobs())
-                                            incrementMob(xIndex, zIndex, mobName, chunksToMobArea);
+                                    if (mechanic != null) {
+                                        SpawningEnvironment environment = new SpawningEnvironment(biome, blockType, y, emptySpace);
+                                        for (String mobName : mechanic.getSpawnableMobs()) {
+                                            if (mechanic.isSpawnable(mobName, environment))
+                                                incrementMob(xIndex, zIndex, mobName, chunksToMobArea);
+                                        }
+                                    }
                                 }
                             } else if (blockType.isAir()) {
                                 timesSolid = 0;
+                                emptySpace++;
+                            } else {
+                                emptySpace = 0;
                             }
                         }
                     }

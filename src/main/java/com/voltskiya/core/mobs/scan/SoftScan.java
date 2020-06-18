@@ -245,53 +245,10 @@ public class SoftScan {
                 }
             }
         }
+
         // get the indicies of the final locations
-
-
         for (Map.Entry<String, Wow> singleMobToStuff : mobToStuff.entrySet()) {
-            final Wow mobStuff = singleMobToStuff.getValue();
-            final short spawnableCount = mobStuff.spawnableInThisChunk;
-            if (spawnableCount == 0) continue;
-            final int finalLocationCount = mobStuff.totalCountNeeded;
-            final short[] finalLocationIndicies = mobStuff.mobToFinalLocationIndicies;
-            final int finalLocationIndiciesLength = finalLocationIndicies.length;
-            for (short i = 0; i < finalLocationIndiciesLength; i++) {
-                finalLocationIndicies[i] = (short) random.nextInt(spawnableCount);
-            }
-            // We don't want a mob to have 2 spawn locations on the same block
-            for (short i = 1; i < finalLocationIndiciesLength; i++) {
-                // the next if statement will probably rarely happen, but if it does happen, we shouldn't just
-                // randomly pick another number and hope it works
-                if (finalLocationIndicies[i] == finalLocationIndicies[i - 1]) {
-                    // fix the value at i-1 very slowly just to ensure that it is done rather than guessing again
-                    final List<Short> tempLocationIndicies = new ArrayList<>(spawnableCount);
-                    for (short j = 0, k = 0; j < finalLocationIndiciesLength; j++) {
-                        if (k == finalLocationIndiciesLength) {
-                            // add the rest of the things to the shuffling list
-                            do {
-                                tempLocationIndicies.add(j++);
-                            } while (j < finalLocationIndiciesLength);
-                        }
-                        if (finalLocationIndicies[k] > j) {
-                            // we need to catch up and add more to this temp list
-                            tempLocationIndicies.add(j);
-                        } else if (finalLocationIndicies[k] != j) { //( finalLocationIndicies < j)
-                            // increment k and decrement j to retry with the next tempLocationIndices
-                            k++;
-                            j--;
-                        }// else (finalLocationIndicies[k] == j) and we don't include this number in our shuffling list
-
-                    }
-                    Collections.shuffle(tempLocationIndicies);
-                    short l = 0;
-                    for (; i < finalLocationIndiciesLength; i++) {
-                        if (finalLocationIndicies[i] == finalLocationIndicies[i - 1]) {
-                            finalLocationIndicies[i - 1] = tempLocationIndicies.get(l++);
-                        }
-                    }
-                    Sorting.insertionSort(finalLocationIndicies); // it's good because it's mostly if not completely sorted already
-                }
-            }
+            singleMobToStuff.getValue().fillFinalLocationIndicies();
         }
 
         // the key in the pair is the current index in the finalLocationIndicies
@@ -430,6 +387,48 @@ public class SoftScan {
 
         public void incrementSpawableInThisChunk() {
             spawnableInThisChunk++;
+        }
+
+        public void fillFinalLocationIndicies() {
+            if (spawnableInThisChunk == 0) return;
+            final int finalLocationIndiciesLength = mobToFinalLocationIndicies.length;
+            for (short i = 0; i < finalLocationIndiciesLength; i++) {
+                mobToFinalLocationIndicies[i] = (short) random.nextInt(spawnableInThisChunk);
+            }
+            // We don't want a mob to have 2 spawn locations on the same block
+            for (short i = 1; i < finalLocationIndiciesLength; i++) {
+                // the next if statement will probably rarely happen, but if it does happen, we shouldn't just
+                // randomly pick another number and hope it works
+                if (mobToFinalLocationIndicies[i] == mobToFinalLocationIndicies[i - 1]) {
+                    // fix the value at i-1 very slowly just to ensure that it is done rather than guessing again
+                    final List<Short> tempLocationIndicies = new ArrayList<>(spawnableInThisChunk);
+                    for (short j = 0, k = 0; j < finalLocationIndiciesLength; j++) {
+                        if (k == finalLocationIndiciesLength) {
+                            // add the rest of the things to the shuffling list
+                            do {
+                                tempLocationIndicies.add(j++);
+                            } while (j < finalLocationIndiciesLength);
+                        }
+                        if (mobToFinalLocationIndicies[k] > j) {
+                            // we need to catch up and add more to this temp list
+                            tempLocationIndicies.add(j);
+                        } else if (mobToFinalLocationIndicies[k] != j) { //( mobToFinalLocationIndicies < j)
+                            // increment k and decrement j to retry with the next tempLocationIndices
+                            k++;
+                            j--;
+                        }// else (mobToFinalLocationIndicies[k] == j) and we don't include this number in our shuffling list
+
+                    }
+                    Collections.shuffle(tempLocationIndicies);
+                    short l = 0;
+                    for (; i < finalLocationIndiciesLength; i++) {
+                        if (mobToFinalLocationIndicies[i] == mobToFinalLocationIndicies[i - 1]) {
+                            mobToFinalLocationIndicies[i - 1] = tempLocationIndicies.get(l++);
+                        }
+                    }
+                    Sorting.insertionSort(mobToFinalLocationIndicies); // it's good because it's mostly if not completely sorted already
+                }
+            }
         }
     }
 }

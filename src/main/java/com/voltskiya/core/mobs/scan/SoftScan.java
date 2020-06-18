@@ -9,7 +9,6 @@ import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import sun.tools.java.Environment;
 
 import java.io.*;
 import java.util.*;
@@ -154,7 +153,7 @@ public class SoftScan {
             scheduleNextRead(lowerX, lowerZ, higherX, higherZ, currentX, currentZ, 0);
             return;
         }
-        // this is an array (of size CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT)
+        // chunkToMobLocationCountAll is an array (of size CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT)
         // that contains a list of varying length of the mob type to how many mob locations should be in a given chunk
         @SuppressWarnings("unchecked")
         List<Pair<String, Short>>[] chunkToMobLocationCountAll = new ArrayList[CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT];
@@ -177,13 +176,9 @@ public class SoftScan {
         for (List<Pair<String, Short>> chunkToMobsLocationCount : chunkToMobLocationCountAll) {
             // chunkToMobsLocationCount is either null or a list with the size of 'CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT'
             if (chunkToMobsLocationCount != null) {
-                // mob to how many locations needed for this chunk
-                final Map<String, Short> mobToCountNeeded = new HashMap<>();
-                // mob to how many real spawnable locations there are in this chunk
-                final Map<String, Short> mobToSpawnable = new HashMap<>();
+                final Map<String, Wow> mobToStuff = new HashMap<>();
                 for (Pair<String, Short> chunkToMobLocationCount : chunkToMobsLocationCount) {
-                    mobToCountNeeded.put(chunkToMobLocationCount.getKey(), chunkToMobLocationCount.getValue());
-                    mobToSpawnable.put(chunkToMobLocationCount.getKey(), (short) 0);
+                    mobToStuff.put(chunkToMobLocationCount.getKey(), new Wow(chunkToMobLocationCount.getValue()));
                 }
                 int finalXIndex = currentX + xi;
                 int finalZIndex = currentZ + zi;
@@ -191,162 +186,7 @@ public class SoftScan {
                 int finalXi = xi;
                 int finalZi = zi;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                    ChunkSnapshot chunkToScan = world.getChunkAt(finalXIndex, finalZIndex).getChunkSnapshot(true, true, false);
-                    // for every block in the chunk grid
-                    for (byte x = 0; x < 16; x++) {
-                        for (byte z = 0; z < 16; z++) {
-
-                            // start at the highest y
-                            int y = chunkToScan.getHighestBlockYAt(x, z);
-                            short timesSolid = 0;
-                            short emptySpace = 10000; // there is a lot of spcae above
-
-                            // keep looking down y column until we hit a solid block SEARCH_DEPTH times in a row or until we hit the bottom of the world
-                            while (y > 0 && timesSolid < SEARCH_DEPTH) {
-                                y--;
-                                @NotNull Biome biome = chunkToScan.getBiome(x, y, z);
-                                @NotNull Material blockType = chunkToScan.getBlockType(x, y, z);
-                                if (blockType.isSolid()) {
-
-                                    // if the we're at a surface of a section of blocks
-                                    if (timesSolid++ == 0) {
-                                        SpawningMechanic mechanic = biomeToRules.get(biome);
-                                        if (mechanic != null) {
-                                            SpawningEnvironment environment = new SpawningEnvironment(biome, blockType, y, emptySpace);
-                                            for (String mobName : mechanic.getSpawnableMobs()) {
-                                                if (mechanic.isSpawnable(mobName, environment)) {
-                                                    Short count = mobToSpawnable.get(mobName);
-                                                    if (count != null)
-                                                        // increment the spawnable locations for this mob
-                                                        mobToSpawnable.put(mobName, (short) (count + 1));
-                                                    // else there is not going to be any mobs to put in this chunk anyways
-                                                    // because we already calculated how many are going to be in this chunk
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                } else if (blockType.isAir()) {
-                                    timesSolid = 0;
-                                    emptySpace++;
-                                } else {
-                                    emptySpace = 0;
-                                }
-                            }
-                        }
-                    }
-                    // get the indicies of the final locations
-
-                    // make the arrays ready for use
-                    Map<String, short[]> mobToFinalLocationIndicies = new HashMap<>();
-                    for (Pair<String, Short> mobsCount : chunkToMobsLocationCount) {
-                        // mobCount is how many of these mobs we should put
-                        mobToFinalLocationIndicies.put(mobsCount.getKey(), new short[mobsCount.getValue()]);
-                    }
-
-                    for (String mobName : mobToFinalLocationIndicies.keySet()) {
-                        final short spawnableCount = mobToSpawnable.get(mobName);
-                        if (spawnableCount == 0) continue;
-                        final int finalLocationCount = mobToCountNeeded.get(mobName);
-                        final short[] finalLocationIndicies = mobToFinalLocationIndicies.get(mobName);
-                        final int finalLocationIndiciesLength = finalLocationIndicies.length;
-                        for (short i = 0; i < finalLocationIndiciesLength; i++) {
-                            finalLocationIndicies[i] = (short) random.nextInt(spawnableCount);
-                        }
-                        // We don't want a mob to have 2 spawn locations on the same block
-                        for (short i = 1; i < finalLocationIndiciesLength; i++) {
-                            // the next if statement will probably rarely happen, but if it does happen, we shouldn't just
-                            // randomly pick another number and hope it works
-                            if (finalLocationIndicies[i] == finalLocationIndicies[i - 1]) {
-                                // fix the value at i-1 very slowly just to ensure that it is done rather than guessing again
-                                final List<Short> tempLocationIndicies = new ArrayList<>(spawnableCount);
-                                for (short j = 0, k = 0; j < finalLocationIndiciesLength; j++) {
-                                    if (k == finalLocationIndiciesLength) {
-                                        // add the rest of the things to the shuffling list
-                                        do {
-                                            tempLocationIndicies.add(j++);
-                                        } while (j < finalLocationIndiciesLength);
-                                    }
-                                    if (finalLocationIndicies[k] > j) {
-                                        // we need to catch up and add more to this temp list
-                                        tempLocationIndicies.add(j);
-                                    } else if (finalLocationIndicies[k] != j) { //( finalLocationIndicies < j)
-                                        // increment k and decrement j to retry with the next tempLocationIndices
-                                        k++;
-                                        j--;
-                                    }// else (finalLocationIndicies[k] == j) and we don't include this number in our shuffling list
-
-                                }
-                                Collections.shuffle(tempLocationIndicies);
-                                short l = 0;
-                                for (; i < finalLocationIndiciesLength; i++) {
-                                    if (finalLocationIndicies[i] == finalLocationIndicies[i - 1]) {
-                                        finalLocationIndicies[i - 1] = tempLocationIndicies.get(l++);
-                                    }
-                                }
-                                Sorting.insertionSort(finalLocationIndicies); // it's good because it's mostly if not completely sorted already
-                            }
-                        }
-                    }
-
-                    // the key in the pair is the current index in the finalLocationIndicies
-                    // the value in the pair is the current spawnable location
-                    Map<String, Pair<Short, Short>> mobToCurrentIndex = new HashMap<>();
-                    for (Map.Entry<String, short[]> entry : mobToFinalLocationIndicies.entrySet())
-                        mobToCurrentIndex.put(entry.getKey(), new Pair<>((short) 0, (short) 0));
-                    // scan it a third and final time
-                    // for every block in the chunk grid
-                    for (byte x = 0; x < 16; x++) {
-                        for (byte z = 0; z < 16; z++) {
-
-                            // start at the highest y
-                            int y = chunkToScan.getHighestBlockYAt(x, z);
-                            short timesSolid = 0;
-                            short emptySpace = 10000; // there is a lot of spcae above
-
-                            // keep looking down y column until we hit a solid block SEARCH_DEPTH times in a row or until we hit the bottom of the world
-                            while (y > 0 && timesSolid < SEARCH_DEPTH) {
-                                y--;
-                                @NotNull Biome biome = chunkToScan.getBiome(x, y, z);
-                                @NotNull Material blockType = chunkToScan.getBlockType(x, y, z);
-                                if (blockType.isSolid()) {
-
-                                    // if the we're at a surface of a section of blocks
-                                    if (timesSolid++ == 0) {
-                                        SpawningMechanic mechanic = biomeToRules.get(biome);
-                                        if (mechanic != null) {
-                                            SpawningEnvironment environment = new SpawningEnvironment(biome, blockType, y, emptySpace);
-                                            for (String mobName : mechanic.getSpawnableMobs()) {
-                                                if (mechanic.isSpawnable(mobName, environment)) {
-                                                    final Pair<Short, Short> currentIndex = mobToCurrentIndex.get(mobName);
-                                                    if (currentIndex.getKey() == mobToFinalLocationIndicies.get(mobName).length)
-                                                        // ignore things if I've already finished with the mob
-                                                        continue;
-                                                    short finalLocation = mobToFinalLocationIndicies.get(mobName)[currentIndex.getKey()];
-                                                    // if we should increment the index and save this location
-                                                    if (finalLocation == currentIndex.getValue()) {
-                                                        // save this location
-                                                        List<Location> finalLocations = mobToFinalLocations.computeIfAbsent(mobName, a -> new ArrayList<>());
-                                                        finalLocations.add(new Location(world, x + finalXi, y, z + finalZi));
-                                                        currentIndex.setKey((short) (currentIndex.getKey() + 1));
-                                                    }
-                                                    // increment mobToCurrentIndex's value (the current spawnable location we're scanning atm
-                                                    currentIndex.setValue((short) (currentIndex.getValue() + 1));
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                } else if (blockType.isAir()) {
-                                    timesSolid = 0;
-                                    emptySpace++;
-                                } else {
-                                    emptySpace = 0;
-                                }
-                            }
-                        }
-                    }
-
+                    dealWithChunkGroup(world, chunkToMobsLocationCount, mobToStuff, finalXIndex, finalZIndex, mobToFinalLocations, finalXi, finalZi);
                 }, delayCounter++);
             }
             currentChunk++;
@@ -358,6 +198,159 @@ public class SoftScan {
         }
         scheduleNextRead(lowerX, lowerZ, higherX, higherZ, currentX, currentZ, delayCounter);
 
+    }
+
+    private static void dealWithChunkGroup(World world, List<Pair<String, Short>> chunkToMobsLocationCount, Map<String, Wow> mobToStuff, int finalXIndex, int finalZIndex, Map<String, List<Location>> mobToFinalLocations, int finalXi, int finalZi) {
+        ChunkSnapshot chunkToScan = world.getChunkAt(finalXIndex, finalZIndex).getChunkSnapshot(true, true, false);
+        // for every block in the chunk grid
+        for (byte x = 0; x < 16; x++) {
+            for (byte z = 0; z < 16; z++) {
+
+                // start at the highest y
+                int y = chunkToScan.getHighestBlockYAt(x, z);
+                short timesSolid = 0;
+                short emptySpace = 10000; // there is a lot of spcae above
+
+                // keep looking down y column until we hit a solid block SEARCH_DEPTH times in a row or until we hit the bottom of the world
+                while (y > 0 && timesSolid < SEARCH_DEPTH) {
+                    y--;
+                    @NotNull Biome biome = chunkToScan.getBiome(x, y, z);
+                    @NotNull Material blockType = chunkToScan.getBlockType(x, y, z);
+                    if (blockType.isSolid()) {
+
+                        // if the we're at a surface of a section of blocks
+                        if (timesSolid++ == 0) {
+                            SpawningMechanic mechanic = biomeToRules.get(biome);
+                            if (mechanic != null) {
+                                SpawningEnvironment environment = new SpawningEnvironment(biome, blockType, y, emptySpace);
+                                for (String mobName : mechanic.getSpawnableMobs()) {
+                                    if (mechanic.isSpawnable(mobName, environment)) {
+                                        Wow stuff = mobToStuff.get(mobName);
+                                        if (stuff != null)
+                                            // increment the spawnable locations for this mob
+                                            stuff.incrementSpawableInThisChunk();
+                                        // else there is not going to be any mobs to put in this chunk anyways
+                                        // because we already calculated how many are going to be in this chunk
+                                    }
+                                }
+                            }
+
+                        }
+                    } else if (blockType.isAir()) {
+                        timesSolid = 0;
+                        emptySpace++;
+                    } else {
+                        emptySpace = 0;
+                    }
+                }
+            }
+        }
+        // get the indicies of the final locations
+
+
+        for (Map.Entry<String, Wow> singleMobToStuff : mobToStuff.entrySet()) {
+            final Wow mobStuff = singleMobToStuff.getValue();
+            final short spawnableCount = mobStuff.spawnableInThisChunk;
+            if (spawnableCount == 0) continue;
+            final int finalLocationCount = mobStuff.totalCountNeeded;
+            final short[] finalLocationIndicies = mobStuff.mobToFinalLocationIndicies;
+            final int finalLocationIndiciesLength = finalLocationIndicies.length;
+            for (short i = 0; i < finalLocationIndiciesLength; i++) {
+                finalLocationIndicies[i] = (short) random.nextInt(spawnableCount);
+            }
+            // We don't want a mob to have 2 spawn locations on the same block
+            for (short i = 1; i < finalLocationIndiciesLength; i++) {
+                // the next if statement will probably rarely happen, but if it does happen, we shouldn't just
+                // randomly pick another number and hope it works
+                if (finalLocationIndicies[i] == finalLocationIndicies[i - 1]) {
+                    // fix the value at i-1 very slowly just to ensure that it is done rather than guessing again
+                    final List<Short> tempLocationIndicies = new ArrayList<>(spawnableCount);
+                    for (short j = 0, k = 0; j < finalLocationIndiciesLength; j++) {
+                        if (k == finalLocationIndiciesLength) {
+                            // add the rest of the things to the shuffling list
+                            do {
+                                tempLocationIndicies.add(j++);
+                            } while (j < finalLocationIndiciesLength);
+                        }
+                        if (finalLocationIndicies[k] > j) {
+                            // we need to catch up and add more to this temp list
+                            tempLocationIndicies.add(j);
+                        } else if (finalLocationIndicies[k] != j) { //( finalLocationIndicies < j)
+                            // increment k and decrement j to retry with the next tempLocationIndices
+                            k++;
+                            j--;
+                        }// else (finalLocationIndicies[k] == j) and we don't include this number in our shuffling list
+
+                    }
+                    Collections.shuffle(tempLocationIndicies);
+                    short l = 0;
+                    for (; i < finalLocationIndiciesLength; i++) {
+                        if (finalLocationIndicies[i] == finalLocationIndicies[i - 1]) {
+                            finalLocationIndicies[i - 1] = tempLocationIndicies.get(l++);
+                        }
+                    }
+                    Sorting.insertionSort(finalLocationIndicies); // it's good because it's mostly if not completely sorted already
+                }
+            }
+        }
+
+        // the key in the pair is the current index in the finalLocationIndicies
+        // the value in the pair is the current spawnable location
+        Map<String, Pair<Short, Short>> mobToCurrentIndex = new HashMap<>();
+        for (Map.Entry<String, Wow> singleMobToStuff : mobToStuff.entrySet())
+            mobToCurrentIndex.put(singleMobToStuff.getKey(), new Pair<>((short) 0, (short) 0));
+        // scan it a third and final time
+        // for every block in the chunk grid
+        for (byte x = 0; x < 16; x++) {
+            for (byte z = 0; z < 16; z++) {
+
+                // start at the highest y
+                int y = chunkToScan.getHighestBlockYAt(x, z);
+                short timesSolid = 0;
+                short emptySpace = 10000; // there is a lot of spcae above
+
+                // keep looking down y column until we hit a solid block SEARCH_DEPTH times in a row or until we hit the bottom of the world
+                while (y > 0 && timesSolid < SEARCH_DEPTH) {
+                    y--;
+                    @NotNull Biome biome = chunkToScan.getBiome(x, y, z);
+                    @NotNull Material blockType = chunkToScan.getBlockType(x, y, z);
+                    if (blockType.isSolid()) {
+
+                        // if the we're at a surface of a section of blocks
+                        if (timesSolid++ == 0) {
+                            SpawningMechanic mechanic = biomeToRules.get(biome);
+                            if (mechanic != null) {
+                                SpawningEnvironment environment = new SpawningEnvironment(biome, blockType, y, emptySpace);
+                                for (String mobName : mechanic.getSpawnableMobs()) {
+                                    if (mechanic.isSpawnable(mobName, environment)) {
+                                        final Pair<Short, Short> currentIndex = mobToCurrentIndex.get(mobName);
+                                        if (currentIndex.getKey() == mobToStuff.get(mobName).totalCountNeeded)
+                                            // ignore things if I've already finished with the mob
+                                            continue;
+                                        short finalLocation = mobToStuff.get(mobName).mobToFinalLocationIndicies[currentIndex.getKey()];
+                                        // if we should increment the index and save this location
+                                        if (finalLocation == currentIndex.getValue()) {
+                                            // save this location
+                                            List<Location> finalLocations = mobToFinalLocations.computeIfAbsent(mobName, a -> new ArrayList<>());
+                                            finalLocations.add(new Location(world, x + finalXi, y, z + finalZi));
+                                            currentIndex.setKey((short) (currentIndex.getKey() + 1));
+                                        }
+                                        // increment mobToCurrentIndex's value (the current spawnable location we're scanning atm
+                                        currentIndex.setValue((short) (currentIndex.getValue() + 1));
+                                    }
+                                }
+                            }
+
+                        }
+                    } else if (blockType.isAir()) {
+                        timesSolid = 0;
+                        emptySpace++;
+                    } else {
+                        emptySpace = 0;
+                    }
+                }
+            }
+        }
     }
 
     private static void scheduleNextRead(short lowerX, short lowerZ, short higherX, short higherZ, short currentX, short currentZ, int ticksToSchedule) {
@@ -377,11 +370,11 @@ public class SoftScan {
 
     private static class Indicies {
         public final String mobPath;
-        public final int[] mobLocationChoices;
-        public final int[] chunkMobCount;
-        public int currentIndex = 0;
-        public int currentMobCount = 0;
-        public short mobsToSpawnThisChunk = 0;
+        private final int[] mobLocationChoices;
+        private final int[] chunkMobCount;
+        private int currentIndex = 0;
+        private int currentMobCount = 0;
+        private short mobsToSpawnThisChunk = 0;
 
         public Indicies(String mobCountsPath, int[] mobLocationChoices, int[] chunkMobCount) {
             this.mobPath = mobCountsPath;
@@ -416,6 +409,27 @@ public class SoftScan {
                 }
             }
             return mobsToSpawnThisChunk;
+        }
+    }
+
+    private static class Wow {
+        // mob to how many locations needed for this mob for this chunk
+        public short totalCountNeeded;
+        // mob to how many real spawnable locations there are in this chunk
+        public short spawnableInThisChunk = 0;
+
+
+        short[] mobToFinalLocationIndicies;
+
+        private Wow(short totalCountNeeded) {
+            this.totalCountNeeded = totalCountNeeded;
+
+            // mobCount is how many of these mobs we should put
+            mobToFinalLocationIndicies = new short[totalCountNeeded];
+        }
+
+        public void incrementSpawableInThisChunk() {
+            spawnableInThisChunk++;
         }
     }
 }

@@ -168,17 +168,16 @@ public class SoftScan {
                 mobsToLocationCount.add(new Pair<>(chunkGroupSingleMob.getKey(), chunkGroupMobList.get(i).getAsShort()));
             }
         }
-        short currentChunk = 0;
         short delayCounter = 0;
         int xi = 0, zi = 0;
-        World world = Bukkit.getWorld("world");
+        World world = Bukkit.getWorld("world"); //todo deal with getting the correct world somehow. probably just a setting in a yml
 
         for (List<Pair<String, Short>> chunkToMobsLocationCount : chunkToMobLocationCountAll) {
             // chunkToMobsLocationCount is either null or a list with the size of 'CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT'
             if (chunkToMobsLocationCount != null) {
-                final Map<String, Wow> mobToStuff = new HashMap<>();
+                final Map<String, MiscMobStuff> mobToStuff = new HashMap<>();
                 for (Pair<String, Short> chunkToMobLocationCount : chunkToMobsLocationCount) {
-                    mobToStuff.put(chunkToMobLocationCount.getKey(), new Wow(chunkToMobLocationCount.getValue()));
+                    mobToStuff.put(chunkToMobLocationCount.getKey(), new MiscMobStuff(chunkToMobLocationCount.getValue()));
                 }
                 int finalXIndex = currentX + xi;
                 int finalZIndex = currentZ + zi;
@@ -186,10 +185,9 @@ public class SoftScan {
                 int finalXi = xi;
                 int finalZi = zi;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                    dealWithChunkGroup(world, chunkToMobsLocationCount, mobToStuff, finalXIndex, finalZIndex, mobToFinalLocations, finalXi, finalZi);
+                    dealWithChunkGroup(world, mobToStuff, finalXIndex, finalZIndex, mobToFinalLocations, finalXi, finalZi);
                 }, delayCounter++);
             }
-            currentChunk++;
             xi++;
             if (xi == CHUNK_SCAN_INCREMENT) {
                 xi = 0;
@@ -200,7 +198,7 @@ public class SoftScan {
 
     }
 
-    private static void dealWithChunkGroup(World world, List<Pair<String, Short>> chunkToMobsLocationCount, Map<String, Wow> mobToStuff, int finalXIndex, int finalZIndex, Map<String, List<Location>> mobToFinalLocations, int finalXi, int finalZi) {
+    private static void dealWithChunkGroup(World world, Map<String, MiscMobStuff> mobToStuff, int finalXIndex, int finalZIndex, Map<String, List<Location>> mobToFinalLocations, int finalXi, int finalZi) {
         ChunkSnapshot chunkToScan = world.getChunkAt(finalXIndex, finalZIndex).getChunkSnapshot(true, true, false);
         // for every block in the chunk grid
         for (byte x = 0; x < 16; x++) {
@@ -210,6 +208,10 @@ public class SoftScan {
                 int y = chunkToScan.getHighestBlockYAt(x, z);
                 short timesSolid = 0;
                 short emptySpace = 10000; // there is a lot of spcae above
+
+                // TODO
+                //  find a way to deal with this code copying.
+                //  I don't know how to deal with this because the inside part of the nested stuff is so different
 
                 // keep looking down y column until we hit a solid block SEARCH_DEPTH times in a row or until we hit the bottom of the world
                 while (y > 0 && timesSolid < SEARCH_DEPTH) {
@@ -225,7 +227,7 @@ public class SoftScan {
                                 SpawningEnvironment environment = new SpawningEnvironment(biome, blockType, y, emptySpace);
                                 for (String mobName : mechanic.getSpawnableMobs()) {
                                     if (mechanic.isSpawnable(mobName, environment)) {
-                                        Wow stuff = mobToStuff.get(mobName);
+                                        MiscMobStuff stuff = mobToStuff.get(mobName);
                                         if (stuff != null)
                                             // increment the spawnable locations for this mob
                                             stuff.incrementSpawableInThisChunk();
@@ -247,7 +249,7 @@ public class SoftScan {
         }
 
         // get the indexes of the final locations
-        for (Map.Entry<String, Wow> singleMobToStuff : mobToStuff.entrySet()) {
+        for (Map.Entry<String, MiscMobStuff> singleMobToStuff : mobToStuff.entrySet()) {
             singleMobToStuff.getValue().fillFinalLocationIndexes();
         }
 
@@ -275,7 +277,7 @@ public class SoftScan {
                                 SpawningEnvironment environment = new SpawningEnvironment(biome, blockType, y, emptySpace);
                                 for (String mobName : mechanic.getSpawnableMobs()) {
                                     if (mechanic.isSpawnable(mobName, environment)) {
-                                        final Wow singleMobToStuff = mobToStuff.get(mobName);
+                                        final MiscMobStuff singleMobToStuff = mobToStuff.get(mobName);
                                         final short finalLocationIndexesIndex = singleMobToStuff.finalLocationIndexesIndex;
                                         final short currentSpawnableLocationIndex = singleMobToStuff.currentSpawnableLocationIndex;
                                         if (finalLocationIndexesIndex == singleMobToStuff.totalCountNeeded)
@@ -328,7 +330,6 @@ public class SoftScan {
         private final int[] chunkMobCount;
         private int currentIndex = 0;
         private int currentMobCount = 0;
-        private short mobsToSpawnThisChunk = 0;
 
         public Indexes(String mobCountsPath, int[] mobLocationChoices, int[] chunkMobCount) {
             this.mobPath = mobCountsPath;
@@ -347,7 +348,7 @@ public class SoftScan {
          * or how many mobs of this type should be chosen as spawn locations
          */
         public short getNextChunk(int currentChunk) {
-            mobsToSpawnThisChunk = 0;
+            short mobsToSpawnThisChunk = 0;
             if (currentIndex >= mobLocationChoices.length)
                 return -1;
             currentMobCount += chunkMobCount[currentChunk];
@@ -366,7 +367,8 @@ public class SoftScan {
         }
     }
 
-    private static class Wow {
+    // this is mainly just a class to house data
+    private static class MiscMobStuff {
         // mob to how many locations needed for this mob for this chunk
         public short totalCountNeeded;
         // mob to how many real spawnable locations there are in this chunk
@@ -379,7 +381,7 @@ public class SoftScan {
         // the indexes of the final locations to mark where mobs spawn
         public short[] mobToFinalLocationIndexes;
 
-        private Wow(short totalCountNeeded) {
+        private MiscMobStuff(short totalCountNeeded) {
             this.totalCountNeeded = totalCountNeeded;
 
             // mobCount is how many of these mobs we should put

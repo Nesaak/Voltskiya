@@ -1,8 +1,8 @@
-package com.voltskiya.core.mobs.scan;
+package com.voltskiya.core.mobs.scanning;
 
 import com.google.gson.*;
 import com.voltskiya.core.Voltskiya;
-import com.voltskiya.core.mobs.scan.mechanics.SpawningMechanic;
+import com.voltskiya.core.mobs.scanning.mechanics.SpawningMechanic;
 import com.voltskiya.core.utils.Pair;
 import com.voltskiya.core.utils.Sorting;
 import org.bukkit.*;
@@ -15,8 +15,8 @@ import java.util.*;
 import java.util.logging.Level;
 
 import static com.voltskiya.core.mobs.MobsCommand.CHUNK_SCAN_INCREMENT;
-import static com.voltskiya.core.mobs.scan.HardScan.SEARCH_DEPTH;
-import static com.voltskiya.core.mobs.scan.HardScan.biomeToRules;
+import static com.voltskiya.core.mobs.scanning.HardScan.SEARCH_DEPTH;
+import static com.voltskiya.core.mobs.scanning.HardScan.biomeToRules;
 
 public class SoftScan {
     private static final float MOB_PERCENTAGE = 0.01f;

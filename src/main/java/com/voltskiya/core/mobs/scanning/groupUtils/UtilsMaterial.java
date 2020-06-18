@@ -1,4 +1,4 @@
-package com.voltskiya.core.mobs.scan.groupUtils;
+package com.voltskiya.core.mobs.scanning.groupUtils;
 
 import org.bukkit.Material;
 

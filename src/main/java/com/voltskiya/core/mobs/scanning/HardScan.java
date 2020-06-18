@@ -1,10 +1,10 @@
-package com.voltskiya.core.mobs.scan;
+package com.voltskiya.core.mobs.scanning;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.voltskiya.core.mobs.scan.mechanics.SpawningMechanic;
-import com.voltskiya.core.mobs.scan.mechanics.MechanicForestFloor;
+import com.voltskiya.core.mobs.scanning.mechanics.SpawningMechanic;
+import com.voltskiya.core.mobs.scanning.mechanics.MechanicForestFloor;
 import com.voltskiya.core.utils.CheapMap;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;

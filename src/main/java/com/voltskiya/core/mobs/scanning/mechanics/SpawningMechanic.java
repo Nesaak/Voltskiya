@@ -1,7 +1,7 @@
-package com.voltskiya.core.mobs.scan.mechanics;
+package com.voltskiya.core.mobs.scanning.mechanics;
 
-import com.voltskiya.core.mobs.scan.SpawningEnvironment;
-import com.voltskiya.core.mobs.scan.rules.SpawningRule;
+import com.voltskiya.core.mobs.scanning.SpawningEnvironment;
+import com.voltskiya.core.mobs.scanning.rules.SpawningRule;
 
 import java.util.HashMap;
 import java.util.Map;

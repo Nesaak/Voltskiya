@@ -1,4 +1,4 @@
-package com.voltskiya.core.mobs.scan;
+package com.voltskiya.core.mobs.scanning;
 
 import org.bukkit.Material;
 import org.bukkit.block.Biome;

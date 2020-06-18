@@ -1,7 +1,7 @@
-package com.voltskiya.core.mobs.scan.rules;
+package com.voltskiya.core.mobs.scanning.rules;
 
-import com.voltskiya.core.mobs.scan.SpawningEnvironment;
-import com.voltskiya.core.mobs.scan.groupUtils.UtilsMaterial;
+import com.voltskiya.core.mobs.scanning.SpawningEnvironment;
+import com.voltskiya.core.mobs.scanning.groupUtils.UtilsMaterial;
 import org.bukkit.Material;
 
 import java.util.HashSet;

@@ -3,10 +3,14 @@ package com.voltskiya.core.mobs;
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.VoltskiyaModule;
 import com.voltskiya.core.mobs.paint.PaintWorld;
-import com.voltskiya.core.mobs.scan.HardScan;
-import com.voltskiya.core.mobs.scan.RefactorHardScan;
-import com.voltskiya.core.mobs.scan.RefactorSoftScan;
-import com.voltskiya.core.mobs.scan.SoftScan;
+import com.voltskiya.core.mobs.scanning.HardScan;
+import com.voltskiya.core.mobs.scanning.RefactorHardScan;
+import com.voltskiya.core.mobs.scanning.RefactorSoftScan;
+import com.voltskiya.core.mobs.scanning.SoftScan;
+import com.voltskiya.core.mobs.spawning.PlayerWatching;
+import com.voltskiya.core.mobs.spawning.Registration;
+import com.voltskiya.core.mobs.spawning.Spawning;
+import com.voltskiya.core.mobs.spawning.Unregistration;
 
 import java.io.File;
 
@@ -22,20 +26,30 @@ public class MobsModule extends VoltskiyaModule {
         File mobLocationsTempFolder = new File(dataFolder, "mobLocationsTemp");
         File mobLocationsFolder = new File(dataFolder, "mobLocations");
         File mobLocationsChunkFolder = new File(dataFolder, "mobLocationsChunk");
+        File registeredMobsFolder = new File(dataFolder, "registeredMobs");
 
         if (!hardScanFolder.exists()) hardScanFolder.mkdir();
         if (!hardScanRefactoredFolder.exists()) hardScanRefactoredFolder.mkdir();
         if (!mobLocationsTempFolder.exists()) mobLocationsTempFolder.mkdir();
         if (!mobLocationsFolder.exists()) mobLocationsFolder.mkdir();
         if (!mobLocationsChunkFolder.exists()) mobLocationsChunkFolder.mkdir();
+        if (!registeredMobsFolder.exists()) registeredMobsFolder.mkdir();
 
         Voltskiya plugin = Voltskiya.get();
         MobsCommand.initialize(plugin);
         PaintWorld.initialize(worldDataFolder);
+
+        // scanning
         HardScan.initialize(hardScanFolder);
         RefactorHardScan.initialize(plugin, hardScanFolder, hardScanRefactoredFolder);
         SoftScan.initialize(plugin, hardScanRefactoredFolder, mobLocationsTempFolder, mobLocationsChunkFolder);
         RefactorSoftScan.initialize(plugin, mobLocationsFolder, mobLocationsChunkFolder);
+
+        // spawning
+        Registration.initialize(plugin, registeredMobsFolder);
+        Unregistration.initialize(plugin, registeredMobsFolder);
+        PlayerWatching.initialize(plugin, registeredMobsFolder);
+        Spawning.initialize(plugin, mobLocationsFolder, registeredMobsFolder);
         plugin.getCommandManager().registerCommand(new MobsCommand());
 
     }

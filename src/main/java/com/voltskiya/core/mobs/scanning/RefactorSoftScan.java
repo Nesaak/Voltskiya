@@ -1,4 +1,4 @@
-package com.voltskiya.core.mobs.scan;
+package com.voltskiya.core.mobs.scanning;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

@@ -30,6 +30,7 @@ public class SoftScan {
 
     private static final Gson gson = new Gson();
     private static final Random random = new Random();
+    @SuppressWarnings({"unchecked"})
     private static HashMap<String, List<CheapLocation>>[][] mobToFinalLocationsGroup = new HashMap[CHUNK_SCAN_INCREMENT][CHUNK_SCAN_INCREMENT];
 
     public static void initialize(Voltskiya pl, File mobLocations, File mobCounts, File mobLocationsTemp, File mobLocationsChunk) {
@@ -197,7 +198,7 @@ public class SoftScan {
                 int finalXi = xi;
                 int finalZi = zi;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                    dealWithChunkGroup(world, mobToStuff, finalXIndex, finalZIndex, finalXi, finalZi);
+                    dealWithChunk(world, mobToStuff, finalXIndex, finalZIndex, finalXi, finalZi);
                 }, delayCounter++);
             }
             if (++xi == CHUNK_SCAN_INCREMENT) {
@@ -217,9 +218,9 @@ public class SoftScan {
     }
 
 
-    private static void dealWithChunkGroup(World world, Map<String, MiscMobStuff> mobToStuff, int xIndex, int zIndex, int finalXi, int finalZi) {
+    private static void dealWithChunk(World world, Map<String, MiscMobStuff> mobToStuff, int xIndex, int zIndex, int finalXi, int finalZi) {
         ChunkSnapshot chunkToScan = world.getChunkAt(xIndex, zIndex).getChunkSnapshot(true, true, false);
-        final Map<String, List<CheapLocation>> mobToFinalLocations = mobToFinalLocationsGroup[finalXi][finalZi] = new HashMap<>();
+        Map<String, List<CheapLocation>> mobToFinalLocations = mobToFinalLocationsGroup[finalXi][finalZi] = new HashMap<>();
         // for every block in the chunk grid
         for (byte x = 0; x < 16; x++) {
             for (byte z = 0; z < 16; z++) {
@@ -387,35 +388,38 @@ public class SoftScan {
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     private static void save(String worldName, int x, int z) throws IOException {
         JsonObject total = new JsonObject();
         int i = 0;
         for (HashMap<String, List<CheapLocation>>[] entryOuter : mobToFinalLocationsGroup) {
             for (HashMap<String, List<CheapLocation>> entryInner : entryOuter) {
-                for (Map.Entry<String, List<CheapLocation>> entry : entryInner.entrySet()) {
-                    JsonElement array = total.get(entry.getKey());
-                    if (array == null) {
-                        total.add(entry.getKey(), array = new JsonArray());
-                        JsonArray arrayCasted = array.getAsJsonArray();
-                        for (int j = 0; j < CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT; j++) {
-                            arrayCasted.add(JSON_PRIMITIVE_ZERO);
+                if (entryInner != null) {
+                    for (Map.Entry<String, List<CheapLocation>> entry : entryInner.entrySet()) {
+                        JsonElement array = total.get(entry.getKey());
+                        if (array == null) {
+                            total.add(entry.getKey(), array = new JsonArray());
+                            JsonArray arrayCasted = array.getAsJsonArray();
+                            for (int j = 0; j < CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT; j++) {
+                                arrayCasted.add(JSON_PRIMITIVE_ZERO);
+                            }
                         }
-                    }
-                    JsonArray arrayCasted = array.getAsJsonArray();
-                    for (CheapLocation location : entry.getValue()) {
-                        arrayCasted.set(i, gson.toJsonTree(location));
+                        JsonArray arrayCasted = array.getAsJsonArray();
+                        for (CheapLocation location : entry.getValue()) {
+                            arrayCasted.set(i, gson.toJsonTree(location));
+                        }
                     }
                 }
                 i++;
             }
         }
+        mobToFinalLocationsGroup = new HashMap[CHUNK_SCAN_INCREMENT][CHUNK_SCAN_INCREMENT];
         File fileToWrite = new File(mobLocationsChunkFolder, String.format("%s#%d#%d.json", worldName, x, z));
         if (!fileToWrite.exists()) fileToWrite.createNewFile();
         BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileToWrite));
         gson.toJson(total, fileWriter);
         fileWriter.close();
 
-        mobToFinalLocationsGroup = new HashMap[CHUNK_SCAN_INCREMENT][CHUNK_SCAN_INCREMENT];
     }
 
     // this is mainly just a class to house data

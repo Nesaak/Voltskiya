@@ -24,20 +24,33 @@ public class SoftScan {
     private static File mobLocationsTempFolder;
     private static File mobLocationsFolder;
     private static File mobCountsFolder;
+    private static File mobLocationsChunkFolder;
 
     private static JavaPlugin plugin;
 
     private static final Gson gson = new Gson();
     private static final Random random = new Random();
+    private static HashMap<String, List<CheapLocation>>[][] mobToFinalLocationsGroup = new HashMap[CHUNK_SCAN_INCREMENT][CHUNK_SCAN_INCREMENT];
 
-    public static void initialize(Voltskiya pl, File mobLocations, File mobCounts, File mobLocationsTemp) {
+    public static void initialize(Voltskiya pl, File mobLocations, File mobCounts, File mobLocationsTemp, File mobLocationsChunk) {
         plugin = pl;
         mobLocationsFolder = mobLocations;
         mobCountsFolder = mobCounts;
         mobLocationsTempFolder = mobLocationsTemp;
+        mobLocationsChunkFolder = mobLocationsChunk;
     }
 
     public static void scan() throws IOException {
+        String[] mobLocationChunkPaths = mobLocationsChunkFolder.list();
+        if (mobLocationChunkPaths != null) {
+            // clean the folder (just in case people changed the name of a mob and there is a lingering file)
+            for (String mobLocationChunkPath : mobLocationChunkPaths) {
+                File mobLocationChunkFile = new File(mobLocationsChunkFolder, mobLocationChunkPath);
+                if (mobLocationChunkFile.exists()) mobLocationChunkFile.delete();
+            }
+        } else {
+            plugin.getLogger().log(Level.SEVERE, String.format("The file %s should be a folder", mobLocationsChunkFolder.toString()));
+        }
         String[] mobLocationPaths = mobLocationsFolder.list();
         if (mobLocationPaths != null) {
             // clean the folder (just in case people changed the name of a mob and there is a lingering file)
@@ -92,8 +105,9 @@ public class SoftScan {
         short higherX = (short) ((borderCenter.getX() + size) / 16);
         short higherZ = (short) ((borderCenter.getZ() + size) / 16);
         int currentChunkTotalIndex = 0;
+
         // increment through each chunk grouping (we do this to keep the ordering correct)
-        // this should be BigO(N^2) instead of BigO(N^4)
+        // this should be BigO(N^2) instead of what it looks like which is BigO(N^4)
         for (short x = lowerX; x < higherX; x += CHUNK_SCAN_INCREMENT) {
             for (short z = lowerZ; z < higherZ; z += CHUNK_SCAN_INCREMENT) {
                 short currentChunkSubIndex = 0;
@@ -110,7 +124,6 @@ public class SoftScan {
                                 mobToIndicesIterator.remove();
                             else {
                                 // we need to load the chunk
-                                System.out.println(mobsToSpawnHere);
                                 mobToSingleChunks.add(new Pair<>(mob.mobPath, mobsToSpawnHere));
                             }
                         }
@@ -181,25 +194,32 @@ public class SoftScan {
                 }
                 int finalXIndex = currentX + xi;
                 int finalZIndex = currentZ + zi;
-                final Map<String, List<Location>> mobToFinalLocations = new HashMap<>();
                 int finalXi = xi;
                 int finalZi = zi;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                    dealWithChunkGroup(world, mobToStuff, finalXIndex, finalZIndex, mobToFinalLocations, finalXi, finalZi);
+                    dealWithChunkGroup(world, mobToStuff, finalXIndex, finalZIndex, finalXi, finalZi);
                 }, delayCounter++);
             }
-            xi++;
-            if (xi == CHUNK_SCAN_INCREMENT) {
+            if (++xi == CHUNK_SCAN_INCREMENT) {
                 xi = 0;
                 zi++;
             }
         }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            try {
+                save("world", currentX, currentZ);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }, delayCounter++);
         scheduleNextRead(lowerX, lowerZ, higherX, higherZ, currentX, currentZ, delayCounter);
 
     }
 
-    private static void dealWithChunkGroup(World world, Map<String, MiscMobStuff> mobToStuff, int finalXIndex, int finalZIndex, Map<String, List<Location>> mobToFinalLocations, int finalXi, int finalZi) {
-        ChunkSnapshot chunkToScan = world.getChunkAt(finalXIndex, finalZIndex).getChunkSnapshot(true, true, false);
+
+    private static void dealWithChunkGroup(World world, Map<String, MiscMobStuff> mobToStuff, int xIndex, int zIndex, int finalXi, int finalZi) {
+        ChunkSnapshot chunkToScan = world.getChunkAt(xIndex, zIndex).getChunkSnapshot(true, true, false);
+        final Map<String, List<CheapLocation>> mobToFinalLocations = mobToFinalLocationsGroup[finalXi][finalZi] = new HashMap<>();
         // for every block in the chunk grid
         for (byte x = 0; x < 16; x++) {
             for (byte z = 0; z < 16; z++) {
@@ -287,8 +307,8 @@ public class SoftScan {
                                         // if we should increment the index and save this location
                                         if (finalLocation == currentSpawnableLocationIndex) {
                                             // save this location
-                                            List<Location> finalLocations = mobToFinalLocations.computeIfAbsent(mobName, a -> new ArrayList<>());
-                                            finalLocations.add(new Location(world, x + finalXi, y, z + finalZi));
+                                            List<CheapLocation> finalLocations = mobToFinalLocations.computeIfAbsent(mobName, a -> new ArrayList<>());
+                                            finalLocations.add(new CheapLocation(xIndex + x, y, zIndex + z));
                                             singleMobToStuff.incrementFinalLocationIndexesIndex();
                                         }
                                         // increment mobToCurrentIndex's value (the current spawnable location we're scanning atm
@@ -367,6 +387,37 @@ public class SoftScan {
         }
     }
 
+    private static void save(String worldName, int x, int z) throws IOException {
+        JsonObject total = new JsonObject();
+        int i = 0;
+        for (HashMap<String, List<CheapLocation>>[] entryOuter : mobToFinalLocationsGroup) {
+            for (HashMap<String, List<CheapLocation>> entryInner : entryOuter) {
+                for (Map.Entry<String, List<CheapLocation>> entry : entryInner.entrySet()) {
+                    JsonElement array = total.get(entry.getKey());
+                    if (array == null) {
+                        total.add(entry.getKey(), array = new JsonArray());
+                        JsonArray arrayCasted = array.getAsJsonArray();
+                        for (int j = 0; j < CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT; j++) {
+                            arrayCasted.add(JSON_PRIMITIVE_ZERO);
+                        }
+                    }
+                    JsonArray arrayCasted = array.getAsJsonArray();
+                    for (CheapLocation location : entry.getValue()) {
+                        arrayCasted.set(i, gson.toJsonTree(location));
+                    }
+                }
+                i++;
+            }
+        }
+        File fileToWrite = new File(mobLocationsChunkFolder, String.format("%s#%d#%d.json", worldName, x, z));
+        if (!fileToWrite.exists()) fileToWrite.createNewFile();
+        BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileToWrite));
+        gson.toJson(total, fileWriter);
+        fileWriter.close();
+
+        mobToFinalLocationsGroup = new HashMap[CHUNK_SCAN_INCREMENT][CHUNK_SCAN_INCREMENT];
+    }
+
     // this is mainly just a class to house data
     private static class MiscMobStuff {
         // mob to how many locations needed for this mob for this chunk
@@ -443,6 +494,16 @@ public class SoftScan {
         }
 
 
+    }
+
+    private static class CheapLocation {
+        public int x, y, z;
+
+        public CheapLocation(int x, int y, int z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
     }
 }
 

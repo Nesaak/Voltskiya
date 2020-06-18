@@ -20,18 +20,20 @@ public class MobsModule extends VoltskiyaModule {
         File hardScanRefactoredFolder = new File(dataFolder, "mobCount");
         File mobLocationsTempFolder = new File(dataFolder, "mobLocationsTemp");
         File mobLocationsFolder = new File(dataFolder, "mobLocations");
+        File mobLocationsChunkFolder = new File(dataFolder, "mobLocationsChunk");
 
         if (!hardScanFolder.exists()) hardScanFolder.mkdir();
         if (!hardScanRefactoredFolder.exists()) hardScanRefactoredFolder.mkdir();
         if (!mobLocationsTempFolder.exists()) mobLocationsTempFolder.mkdir();
         if (!mobLocationsFolder.exists()) mobLocationsFolder.mkdir();
+        if (!mobLocationsChunkFolder.exists()) mobLocationsChunkFolder.mkdir();
 
         Voltskiya plugin = Voltskiya.get();
         MobsCommand.initialize(plugin);
         PaintWorld.initialize(worldDataFolder);
         HardScan.initialize(hardScanFolder);
         RefactorHardScan.initialize(plugin, hardScanFolder, hardScanRefactoredFolder);
-        SoftScan.initialize(plugin, mobLocationsFolder, hardScanRefactoredFolder, mobLocationsTempFolder);
+        SoftScan.initialize(plugin, mobLocationsFolder, hardScanRefactoredFolder, mobLocationsTempFolder, mobLocationsChunkFolder);
         plugin.getCommandManager().registerCommand(new MobsCommand());
 
     }

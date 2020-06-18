@@ -5,6 +5,7 @@ import com.voltskiya.core.VoltskiyaModule;
 import com.voltskiya.core.mobs.paint.PaintWorld;
 import com.voltskiya.core.mobs.scan.HardScan;
 import com.voltskiya.core.mobs.scan.RefactorHardScan;
+import com.voltskiya.core.mobs.scan.RefactorSoftScan;
 import com.voltskiya.core.mobs.scan.SoftScan;
 
 import java.io.File;
@@ -33,7 +34,8 @@ public class MobsModule extends VoltskiyaModule {
         PaintWorld.initialize(worldDataFolder);
         HardScan.initialize(hardScanFolder);
         RefactorHardScan.initialize(plugin, hardScanFolder, hardScanRefactoredFolder);
-        SoftScan.initialize(plugin, mobLocationsFolder, hardScanRefactoredFolder, mobLocationsTempFolder, mobLocationsChunkFolder);
+        SoftScan.initialize(plugin, hardScanRefactoredFolder, mobLocationsTempFolder, mobLocationsChunkFolder);
+        RefactorSoftScan.initialize(plugin, mobLocationsFolder, mobLocationsChunkFolder);
         plugin.getCommandManager().registerCommand(new MobsCommand());
 
     }

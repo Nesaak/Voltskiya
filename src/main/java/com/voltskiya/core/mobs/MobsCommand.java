@@ -89,7 +89,7 @@ public class MobsCommand extends BaseCommand {
 
     @Subcommand("scan")
     public class Scan extends BaseCommand {
-        private static final int CHUNK_SCAN_INCREMENT_TIME = 5;
+        private static final int CHUNK_SCAN_INCREMENT_TIME = 10;
 
         @Subcommand("hard")
         public void hardScan(Player player) {

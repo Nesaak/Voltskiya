@@ -19,10 +19,9 @@ import static com.voltskiya.core.mobs.scan.HardScan.SEARCH_DEPTH;
 import static com.voltskiya.core.mobs.scan.HardScan.biomeToRules;
 
 public class SoftScan {
-    private static final float MOB_PERCENTAGE = 0.001f;
-    public static final JsonPrimitive JSON_PRIMITIVE_ZERO = new JsonPrimitive(0);
+    private static final float MOB_PERCENTAGE = 0.01f;
+    private static final JsonPrimitive JSON_PRIMITIVE_ZERO = new JsonPrimitive(0);
     private static File mobLocationsTempFolder;
-    private static File mobLocationsFolder;
     private static File mobCountsFolder;
     private static File mobLocationsChunkFolder;
 
@@ -33,9 +32,8 @@ public class SoftScan {
     @SuppressWarnings({"unchecked"})
     private static HashMap<String, List<CheapLocation>>[][] mobToFinalLocationsGroup = new HashMap[CHUNK_SCAN_INCREMENT][CHUNK_SCAN_INCREMENT];
 
-    public static void initialize(Voltskiya pl, File mobLocations, File mobCounts, File mobLocationsTemp, File mobLocationsChunk) {
+    public static void initialize(Voltskiya pl, File mobCounts, File mobLocationsTemp, File mobLocationsChunk) {
         plugin = pl;
-        mobLocationsFolder = mobLocations;
         mobCountsFolder = mobCounts;
         mobLocationsTempFolder = mobLocationsTemp;
         mobLocationsChunkFolder = mobLocationsChunk;
@@ -52,13 +50,6 @@ public class SoftScan {
         } else {
             plugin.getLogger().log(Level.SEVERE, String.format("The file %s should be a folder", mobLocationsChunkFolder.toString()));
         }
-        String[] mobLocationPaths = mobLocationsFolder.list();
-        if (mobLocationPaths != null) {
-            // clean the folder (just in case people changed the name of a mob and there is a lingering file)
-            for (String mobLocationPath : mobLocationPaths) {
-                File mobLocationFile = new File(mobLocationsFolder, mobLocationPath);
-                if (mobLocationFile.exists()) mobLocationFile.delete();
-            }
 
             String[] mobCountsPaths = mobCountsFolder.list();
             if (mobCountsPaths == null) {
@@ -89,10 +80,6 @@ public class SoftScan {
             }
             // rescan everything and find the locations
             findLocations(mobToIndices);
-
-        } else {
-            plugin.getLogger().log(Level.SEVERE, String.format("The file %s should be a folder", mobLocationsFolder.toString()));
-        }
     }
 
     private static void findLocations(List<Indexes> mobToIndices) throws IOException {
@@ -336,8 +323,14 @@ public class SoftScan {
         if (currentZ >= higherZ) {
             nextZ = lowerZ;
             nextX = (short) (currentX + CHUNK_SCAN_INCREMENT);
-            if (nextX >= higherX)
+            if (nextX >= higherX) {
+                try {
+                    RefactorSoftScan.scan();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return;
+            }
         } else {
             nextX = currentX; // this was already incremented
             nextZ = currentZ;
@@ -500,14 +493,5 @@ public class SoftScan {
 
     }
 
-    private static class CheapLocation {
-        public int x, y, z;
-
-        public CheapLocation(int x, int y, int z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-    }
 }
 

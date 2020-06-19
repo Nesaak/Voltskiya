@@ -52,11 +52,11 @@ public class RefactorHardScan {
                 addFileContents(mobCounts, finalI);
                 try {
                     mobCountReader.close();
-//        todo            mobCountFile.delete(); // get rid of the temporary file
+                    mobCountFile.delete(); // get rid of the temporary file
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                System.out.println(finalI + "/" + mobCountPaths.length);
+                System.out.println("stage 2: " + finalI + "/" + mobCountPaths.length);
             }, i);
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, RefactorHardScan::write, i);

@@ -25,6 +25,7 @@ public class RefactorSoftScan {
     }
 
     public static void scan() throws IOException {
+        System.out.println("Stage 4!");
         cleanNewFolder();
 
         Map<String, JsonArray> finalTotal = new HashMap<>();
@@ -52,6 +53,7 @@ public class RefactorSoftScan {
             writer.close();
         }
         cleanOldFolder();
+        System.out.println("done.");
     }
 
     private static void cleanNewFolder() {

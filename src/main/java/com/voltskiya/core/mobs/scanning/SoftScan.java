@@ -51,35 +51,35 @@ public class SoftScan {
             plugin.getLogger().log(Level.SEVERE, String.format("The file %s should be a folder", mobLocationsChunkFolder.toString()));
         }
 
-            String[] mobCountsPaths = mobCountsFolder.list();
-            if (mobCountsPaths == null) {
-                plugin.getLogger().log(Level.SEVERE, String.format("The file %s should be a folder", mobCountsFolder.toString()));
-                return;
-            }
-            List<Indexes> mobToIndices = new ArrayList<>();
-            for (String mobCountsPath : mobCountsPaths) {
-                JsonArray mobCountsArray = gson.fromJson(new BufferedReader(new FileReader(new File(mobCountsFolder, mobCountsPath))), JsonArray.class);
+        String[] mobCountsPaths = mobCountsFolder.list();
+        if (mobCountsPaths == null) {
+            plugin.getLogger().log(Level.SEVERE, String.format("The file %s should be a folder", mobCountsFolder.toString()));
+            return;
+        }
+        List<Indexes> mobToIndices = new ArrayList<>();
+        for (String mobCountsPath : mobCountsPaths) {
+            JsonArray mobCountsArray = gson.fromJson(new BufferedReader(new FileReader(new File(mobCountsFolder, mobCountsPath))), JsonArray.class);
 
-                // I don't think I need a long, unless the map gets bigger and a mob is allowed to spawn on every air space
-                // choose locations from the first spawnable location to the last
-                int totalMobCount = 0;
-                int[] chunkMobCount = new int[mobCountsArray.size()];
-                int i = 0;
-                for (JsonElement mobCount : mobCountsArray) {
-                    final int mobCountInt = mobCount.getAsInt();
-                    totalMobCount += mobCountInt;
-                    chunkMobCount[i++] = mobCountInt;
-                }
-                int mobLocationsSize = (int) (MOB_PERCENTAGE * totalMobCount);
-                int[] mobLocationChoices = new int[mobLocationsSize];
-                for (i = 0; i < mobLocationsSize; i++)
-                    mobLocationChoices[i] = random.nextInt(totalMobCount); // choose a random number between the first spawnable location and the last
-                Arrays.sort(mobLocationChoices);
-                mobToIndices.add(new Indexes(mobCountsPath.substring(0, mobCountsPath.length() - 5), mobLocationChoices, chunkMobCount));
-                // we have the list of location indices
+            // I don't think I need a long, unless the map gets bigger and a mob is allowed to spawn on every air space
+            // choose locations from the first spawnable location to the last
+            int totalMobCount = 0;
+            int[] chunkMobCount = new int[mobCountsArray.size()];
+            int i = 0;
+            for (JsonElement mobCount : mobCountsArray) {
+                final int mobCountInt = mobCount.getAsInt();
+                totalMobCount += mobCountInt;
+                chunkMobCount[i++] = mobCountInt;
             }
-            // rescan everything and find the locations
-            findLocations(mobToIndices);
+            int mobLocationsSize = (int) (MOB_PERCENTAGE * totalMobCount);
+            int[] mobLocationChoices = new int[mobLocationsSize];
+            for (i = 0; i < mobLocationsSize; i++)
+                mobLocationChoices[i] = random.nextInt(totalMobCount); // choose a random number between the first spawnable location and the last
+            Arrays.sort(mobLocationChoices);
+            mobToIndices.add(new Indexes(mobCountsPath.substring(0, mobCountsPath.length() - 5), mobLocationChoices, chunkMobCount));
+            // we have the list of location indices
+        }
+        // rescan everything and find the locations
+        findLocations(mobToIndices);
     }
 
     private static void findLocations(List<Indexes> mobToIndices) throws IOException {
@@ -321,14 +321,19 @@ public class SoftScan {
         final short nextX, nextZ;
         currentZ += CHUNK_SCAN_INCREMENT;
         if (currentZ >= higherZ) {
+            System.out.println("Stage 3: " + currentX + "/" + higherX);
             nextZ = lowerZ;
             nextX = (short) (currentX + CHUNK_SCAN_INCREMENT);
             if (nextX >= higherX) {
-                try {
-                    RefactorSoftScan.scan();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    System.out.println("NULLIFY");
+                    mobToFinalLocationsGroup = null; // encourage the garbage collector
+                    try {
+                        RefactorSoftScan.scan();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }, ticksToSchedule);
                 return;
             }
         } else {

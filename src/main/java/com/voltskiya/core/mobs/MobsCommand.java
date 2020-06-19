@@ -116,7 +116,7 @@ public class MobsCommand extends BaseCommand {
                                     }
                                 }
                                 HardScan.scan(chunks, CHUNK_SCAN_INCREMENT);
-                                if (finalZ == lowerZ) System.out.println(finalX + "/" + higherX);
+                                if (finalZ == lowerZ) System.out.println("Stage 1: " + finalX + "/" + higherX);
                             }
                             , delayCounter += CHUNK_SCAN_INCREMENT_TIME
                     );

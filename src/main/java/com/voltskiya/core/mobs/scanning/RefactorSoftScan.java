@@ -45,11 +45,11 @@ public class RefactorSoftScan {
 
             }
         }
-        for (Map.Entry<String, JsonArray> entry : finalTotal.entrySet()) {
-            File fileToWrite = new File(mobLocationsFolder, entry.getKey() + ".json");
+        for (Map.Entry<String, JsonArray> mobEntry : finalTotal.entrySet()) {
+            File fileToWrite = new File(mobLocationsFolder, mobEntry.getKey() + ".json");
             if (!fileToWrite.exists()) fileToWrite.createNewFile();
             final BufferedWriter writer = new BufferedWriter(new FileWriter(fileToWrite));
-            gson.toJson(entry.getValue(), writer);
+            gson.toJson(mobEntry.getValue(), writer);
             writer.close();
         }
         cleanOldFolder();

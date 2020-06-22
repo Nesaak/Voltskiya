@@ -13,6 +13,7 @@ import com.voltskiya.core.mobs.spawning.Spawning;
 import com.voltskiya.core.mobs.spawning.Unregistration;
 
 import java.io.File;
+import java.io.IOException;
 
 public class MobsModule extends VoltskiyaModule {
     @Override
@@ -27,6 +28,7 @@ public class MobsModule extends VoltskiyaModule {
         File mobLocationsFolder = new File(dataFolder, "mobLocations");
         File mobLocationsChunkFolder = new File(dataFolder, "mobLocationsChunk");
         File registeredMobsFolder = new File(dataFolder, "registeredMobs");
+        File activeMobsFolder = new File(dataFolder, "activeMobs");
 
         if (!hardScanFolder.exists()) hardScanFolder.mkdir();
         if (!hardScanRefactoredFolder.exists()) hardScanRefactoredFolder.mkdir();
@@ -34,6 +36,12 @@ public class MobsModule extends VoltskiyaModule {
         if (!mobLocationsFolder.exists()) mobLocationsFolder.mkdir();
         if (!mobLocationsChunkFolder.exists()) mobLocationsChunkFolder.mkdir();
         if (!registeredMobsFolder.exists()) registeredMobsFolder.mkdir();
+        if (!activeMobsFolder.exists()) {
+            try {
+                activeMobsFolder.createNewFile();
+            } catch (IOException e) {
+            }
+        }
 
         Voltskiya plugin = Voltskiya.get();
         MobsCommand.initialize(plugin);
@@ -48,8 +56,8 @@ public class MobsModule extends VoltskiyaModule {
         // spawning
         Registration.initialize(plugin, registeredMobsFolder);
         Unregistration.initialize(plugin, registeredMobsFolder);
-        PlayerWatching.initialize(plugin, registeredMobsFolder);
         Spawning.initialize(plugin, mobLocationsFolder, registeredMobsFolder);
+        new PlayerWatching(plugin, registeredMobsFolder,activeMobsFolder);
         plugin.getCommandManager().registerCommand(new MobsCommand());
 
     }

@@ -3,6 +3,7 @@ package com.voltskiya.core.utils;
 import java.util.Map;
 
 public class Pair<K, V> implements Map.Entry<K, V> {
+    private static final int MAX_INT_VAL = Integer.MAX_VALUE;
     private K key;
     private V value;
 
@@ -37,4 +38,17 @@ public class Pair<K, V> implements Map.Entry<K, V> {
                 '>';
     }
 
+    @Override
+    public int hashCode() {
+        return 31 * (17 + key.hashCode() + value.hashCode()) % MAX_INT_VAL;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Pair) {
+            Pair pair = (Pair) other;
+            return key.equals(pair.key) && value.equals(pair.value);
+        }
+        return false;
+    }
 }

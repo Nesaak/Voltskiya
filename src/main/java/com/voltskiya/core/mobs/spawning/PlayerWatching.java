@@ -8,7 +8,6 @@ import com.voltskiya.core.mobs.mobs.Mobs;
 import com.voltskiya.core.mobs.mobs.SpawnableMob;
 import com.voltskiya.core.utils.Pair;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -18,10 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -31,7 +27,7 @@ public class PlayerWatching implements @NotNull Listener {
     private static final byte PLAYER_PROTECTION_DISTANCE = 2;
     private Voltskiya plugin;
     private final File registeredMobsFolder;
-    private final File activeMobsFile;
+    private final File activeMobsFolder;
     private LinkedList<Player> playersToWatch = new LinkedList<>();
     private final Object playersToWatchSync = new Object();
     private final Gson gson = new Gson();
@@ -39,7 +35,7 @@ public class PlayerWatching implements @NotNull Listener {
     public PlayerWatching(Voltskiya pl, File registeredMobs, File activeMobs) {
         plugin = pl;
         registeredMobsFolder = registeredMobs;
-        activeMobsFile = activeMobs;
+        activeMobsFolder = activeMobs;
         Bukkit.getPluginManager().registerEvents(this, pl);
         synchronized (playersToWatchSync) {
             playersToWatch.addAll(Bukkit.getOnlinePlayers());
@@ -49,24 +45,45 @@ public class PlayerWatching implements @NotNull Listener {
 
     private void watchPlayers() {
         String worldName = "world";
-        Collection<Pair<Integer, Integer>> playerLocations = new ArrayList<>();
+        Collection<Pair<Integer, Integer>> chunksToLoad;
+        Collection<Pair<Integer, Integer>> chunksToRemain = new ArrayList<>();
         synchronized (playersToWatchSync) {
-            Iterator<Player> iterator = playersToWatch.iterator();
-            while (iterator.hasNext()) {
-                Player playerToWatch = iterator.next();
-                if (!playerToWatch.isOnline())
-                    iterator.remove();
-                Location playerLocation = playerToWatch.getLocation();
+            playersToWatch.removeIf(playerToWatch -> !playerToWatch.isOnline());
+            chunksToLoad = getChunksLoaded(playersToWatch);
+            for (Player player : playersToWatch) {
+                Location playerLocation = player.getLocation();
                 World world = playerLocation.getWorld();
                 if (world != null)
-                    if (world.getName().equals(worldName)) {
+                    if (world.getName().equals("world")) {
                         int x = (int) playerLocation.getX() / 16;
                         int z = (int) playerLocation.getZ() / 16;
-                        playerLocations.add(new Pair<>(x, z));
+                        for (byte xi = -PLAYER_PROTECTION_DISTANCE; xi < PLAYER_PROTECTION_DISTANCE; xi++) {
+                            for (byte zi = -PLAYER_PROTECTION_DISTANCE; zi < PLAYER_PROTECTION_DISTANCE; zi++) {
+                                chunksToRemain.add(new Pair<>(x + xi, z + zi));
+                            }
+                        }
                     }
             }
         }
-        HashSet<Pair<Integer, Integer>> chunksToLoad = new HashSet<>();
+        correctLoadedChunks(chunksToLoad, chunksToRemain, worldName);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::watchPlayers, TIME_BETWEEN_WATCH_PLAYER);
+    }
+
+    @NotNull
+    public static Collection<Pair<Integer, Integer>> getChunksLoaded(Collection<? extends Player> players) {
+        Collection<Pair<Integer, Integer>> playerLocations = new ArrayList<>();
+        for (Player player : players) {
+            Location playerLocation = player.getLocation();
+            World world = playerLocation.getWorld();
+            if (world != null)
+                if (world.getName().equals("world")) {
+                    int x = (int) playerLocation.getX() / 16;
+                    int z = (int) playerLocation.getZ() / 16;
+                    playerLocations.add(new Pair<>(x, z));
+                }
+        }
+
+        Collection<Pair<Integer, Integer>> chunksToLoad = new ArrayList<>();
         for (Pair<Integer, Integer> playerLocation : playerLocations) {
             for (byte xi = -PLAYER_VIEW_DISTANCE; xi < PLAYER_VIEW_DISTANCE; xi++) {
                 for (byte zi = -PLAYER_VIEW_DISTANCE; zi < PLAYER_VIEW_DISTANCE; zi++) {
@@ -81,14 +98,14 @@ public class PlayerWatching implements @NotNull Listener {
                 }
             }
         }
-        correctLoadedChunks(chunksToLoad, worldName);
+        return chunksToLoad;
     }
 
-    private void correctLoadedChunks(HashSet<Pair<Integer, Integer>> chunksToLoad, String worldName) {
-        String[] chunksLoadedStrings = registeredMobsFolder.list();
+    private void correctLoadedChunks(Collection<Pair<Integer, Integer>> chunksToLoad, Collection<Pair<Integer, Integer>> chunksToRemain, String worldName) {
+        String[] chunksLoadedStrings = activeMobsFolder.list();
         HashSet<Pair<Integer, Integer>> chunksLoaded = new HashSet<>();
         for (String chunkLoadedString : chunksLoadedStrings) {
-            String[] chunkLoadedStringSplit = chunkLoadedString.split(",", 2);
+            String[] chunkLoadedStringSplit = chunkLoadedString.split(",");
             if (chunkLoadedStringSplit[0].equals(worldName))
                 try {
                     int x = Integer.parseInt(chunkLoadedStringSplit[1]);
@@ -101,25 +118,32 @@ public class PlayerWatching implements @NotNull Listener {
         // find the chunks that are not loaded and load them
         for (Pair<Integer, Integer> chunkToLoad : chunksToLoad) {
             if (!chunksLoaded.remove(chunkToLoad)) {
+                // the chunk is not currently loaded
                 try {
                     loadChunk(chunkToLoad, worldName);
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
-        // chunksLoadedStrings now contains only the chunks that shouldn't be loaded anymore
+        for (Pair<Integer, Integer> chunkToStay : chunksToRemain) {
+            chunksLoaded.remove(chunkToStay);
+        }
+
+        // remove the chunks that are loaded that shouldn't be loaded
         for (Pair<Integer, Integer> chunkToUnload : chunksLoaded) {
             // todo unload the chunk
+            chunksLoaded.remove(chunkToUnload);
         }
     }
 
-    private void loadChunk(Pair<Integer, Integer> chunkToLoad, String worldName) throws FileNotFoundException {
+    private void loadChunk(Pair<Integer, Integer> chunkToLoad, String worldName) throws IOException {
+        System.out.println("load chunk " + chunkToLoad.toString());
         World world = Objects.requireNonNull(Bukkit.getWorld(worldName)); // this really should not be null
 
         int x = chunkToLoad.getKey();
         int z = chunkToLoad.getValue();
-        File fileChunkToLoad = new File(registeredMobsFolder, String.format("%s,%d,%d", worldName, x, z));
+        File fileChunkToLoad = new File(registeredMobsFolder, String.format("%s,%d,%d.json", worldName, x, z));
         if (fileChunkToLoad.exists()) {
             // we have a record of this chunk in this world
             BufferedReader read = new BufferedReader(new FileReader(fileChunkToLoad));
@@ -128,11 +152,12 @@ public class PlayerWatching implements @NotNull Listener {
                 SimpleDiskMob mobToLoad = gson.fromJson(mobToLoadJson, SimpleDiskMob.class);
                 // load the mob
                 Pair<EntityType, SpawnableMob> mobStructure = Mobs.getMobStructure(mobToLoad.name);
-                Entity spawned = world.spawnEntity(new Location(world, x + mobToLoad.x, mobToLoad.y, z + mobToLoad.z), mobStructure.getKey());
+                Entity spawned = world.spawnEntity(new Location(world, x * 16 + mobToLoad.x, mobToLoad.y, z * 16 + mobToLoad.z), mobStructure.getKey());
                 ((LivingEntity) spawned).setRemoveWhenFarAway(false); // this is my mob D:
                 mobStructure.getValue().spawn(spawned);
-                System.out.println(spawned.getName() + " was spawned");
+                System.out.println(spawned.getName() + " was spawned at " + (x * 16 + mobToLoad.x) + ", " + (z * 16 + mobToLoad.z));
             }
+            read.close();
             fileChunkToLoad.delete();
         }
     }

@@ -12,4 +12,13 @@ public class SimpleDiskMob {
         this.y = y;
         this.z = z;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof SimpleDiskMob) {
+            SimpleDiskMob other = (SimpleDiskMob) o;
+            return other.name.equals(name) && other.x == x && other.y == y && other.z == z;
+        }
+        return false;
+    }
 }

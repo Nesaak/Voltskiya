@@ -19,7 +19,7 @@ import static com.voltskiya.core.mobs.scanning.HardScan.SEARCH_DEPTH;
 import static com.voltskiya.core.mobs.scanning.HardScan.biomeToRules;
 
 public class SoftScan {
-    private static final float MOB_PERCENTAGE = 0.01f;
+    private static final float MOB_PERCENTAGE = 0.05f;
     private static final JsonPrimitive JSON_PRIMITIVE_ZERO = new JsonPrimitive(0);
     private static File mobLocationsTempFolder;
     private static File mobCountsFolder;
@@ -296,7 +296,7 @@ public class SoftScan {
                                         if (finalLocation == currentSpawnableLocationIndex) {
                                             // save this location
                                             List<CheapLocation> finalLocations = mobToFinalLocations.computeIfAbsent(mobName, a -> new ArrayList<>());
-                                            finalLocations.add(new CheapLocation(xIndex + x, y, zIndex + z));
+                                            finalLocations.add(new CheapLocation(xIndex * 16 + x, y, zIndex * 16 + z));
                                             singleMobToStuff.incrementFinalLocationIndexesIndex();
                                         }
                                         // increment mobToCurrentIndex's value (the current spawnable location we're scanning atm
@@ -472,6 +472,7 @@ public class SoftScan {
                             do {
                                 tempLocationIndexes.add(j++);
                             } while (j < finalLocationIndexesLength);
+                            break;
                         }
                         if (mobToFinalLocationIndexes[k] > j) {
                             // we need to catch up and add more to this temp list

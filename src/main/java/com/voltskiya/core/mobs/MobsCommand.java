@@ -10,6 +10,7 @@ import com.voltskiya.core.mobs.paint.PaintWorld;
 import com.voltskiya.core.mobs.scanning.HardScan;
 import com.voltskiya.core.mobs.scanning.RefactorHardScan;
 import com.voltskiya.core.mobs.scanning.SoftScan;
+import com.voltskiya.core.mobs.spawning.Spawning;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -86,7 +87,14 @@ public class MobsCommand extends BaseCommand {
         PaintWorld.drawMob(location, uid);
 
     }
-
+    @Subcommand("spawnAll")
+    public void spawnAll(){
+        try {
+            Spawning.correctSpawnedNumbers();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @Subcommand("scan")
     public class Scan extends BaseCommand {
         private static final int CHUNK_SCAN_INCREMENT_TIME = 10;

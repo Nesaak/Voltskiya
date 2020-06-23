@@ -2,6 +2,7 @@ package com.voltskiya.core.mobs;
 
 import com.voltskiya.core.Voltskiya;
 import com.voltskiya.core.VoltskiyaModule;
+import com.voltskiya.core.mobs.mobs.Mobs;
 import com.voltskiya.core.mobs.paint.PaintWorld;
 import com.voltskiya.core.mobs.scanning.HardScan;
 import com.voltskiya.core.mobs.scanning.RefactorHardScan;
@@ -36,12 +37,7 @@ public class MobsModule extends VoltskiyaModule {
         if (!mobLocationsFolder.exists()) mobLocationsFolder.mkdir();
         if (!mobLocationsChunkFolder.exists()) mobLocationsChunkFolder.mkdir();
         if (!registeredMobsFolder.exists()) registeredMobsFolder.mkdir();
-        if (!activeMobsFolder.exists()) {
-            try {
-                activeMobsFolder.createNewFile();
-            } catch (IOException e) {
-            }
-        }
+        if (!activeMobsFolder.exists()) activeMobsFolder.mkdir();
 
         Voltskiya plugin = Voltskiya.get();
         MobsCommand.initialize(plugin);
@@ -54,10 +50,11 @@ public class MobsModule extends VoltskiyaModule {
         RefactorSoftScan.initialize(plugin, mobLocationsFolder, mobLocationsChunkFolder);
 
         // spawning
+        Mobs.initialize(mobLocationsFolder);
         Registration.initialize(plugin, registeredMobsFolder);
         Unregistration.initialize(plugin, registeredMobsFolder);
         Spawning.initialize(plugin, mobLocationsFolder, registeredMobsFolder);
-        new PlayerWatching(plugin, registeredMobsFolder,activeMobsFolder);
+        new PlayerWatching(plugin, registeredMobsFolder, activeMobsFolder);
         plugin.getCommandManager().registerCommand(new MobsCommand());
 
     }

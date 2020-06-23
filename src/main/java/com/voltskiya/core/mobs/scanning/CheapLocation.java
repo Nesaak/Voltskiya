@@ -1,6 +1,6 @@
 package com.voltskiya.core.mobs.scanning;
 
-class CheapLocation {
+public class CheapLocation {
     public int x, y, z;
 
     public CheapLocation(int x, int y, int z) {

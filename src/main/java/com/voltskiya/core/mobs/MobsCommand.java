@@ -9,6 +9,7 @@ import com.voltskiya.core.common.Permission;
 import com.voltskiya.core.mobs.paint.PaintWorld;
 import com.voltskiya.core.mobs.scanning.HardScan;
 import com.voltskiya.core.mobs.scanning.RefactorHardScan;
+import com.voltskiya.core.mobs.scanning.RefactorSoftScan;
 import com.voltskiya.core.mobs.scanning.SoftScan;
 import com.voltskiya.core.mobs.spawning.Spawning;
 import org.bukkit.*;
@@ -113,8 +114,8 @@ public class MobsCommand extends BaseCommand {
             int delayCounter = 0;
             for (short x = lowerX; x < higherX; x += CHUNK_SCAN_INCREMENT) {
                 for (short z = lowerZ; z < higherZ; z += CHUNK_SCAN_INCREMENT) {
-                    short finalX = x;
-                    short finalZ = z;
+                    final short finalX = x;
+                    final short finalZ = z;
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                                 final ChunkSnapshot[][] chunks = new ChunkSnapshot[CHUNK_SCAN_INCREMENT][CHUNK_SCAN_INCREMENT];
                                 for (byte xi = 0; xi < CHUNK_SCAN_INCREMENT; xi++) {
@@ -137,6 +138,14 @@ public class MobsCommand extends BaseCommand {
         public void softScan() {
             try {
                 SoftScan.scan();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        @Subcommand("test")
+        public void scan(){
+            try {
+                RefactorSoftScan.scan();
             } catch (IOException e) {
                 e.printStackTrace();
             }

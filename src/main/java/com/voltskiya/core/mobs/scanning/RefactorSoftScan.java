@@ -31,7 +31,9 @@ public class RefactorSoftScan {
         Map<String, JsonArray> finalTotal = new HashMap<>();
         String[] mobLocationsChunkPaths = mobLocationsChunkFolder.list();
         for (String mobLocationsChunkPath : mobLocationsChunkPaths) {
-            JsonObject total = gson.fromJson(new BufferedReader(new FileReader(new File(mobLocationsChunkFolder, mobLocationsChunkPath))), JsonObject.class);
+            final BufferedReader reader = new BufferedReader(new FileReader(new File(mobLocationsChunkFolder, mobLocationsChunkPath)));
+            JsonObject total = gson.fromJson(reader, JsonObject.class);
+            reader.close();
             for (Map.Entry<String, JsonElement> mobToLocations : total.entrySet()) {
                 JsonArray finalArray = finalTotal.get(mobToLocations.getKey());
                 if (finalArray == null) {

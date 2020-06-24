@@ -2,6 +2,7 @@ package com.voltskiya.core.mobs.scanning;
 
 import com.google.gson.*;
 import com.voltskiya.core.Voltskiya;
+import com.voltskiya.core.mobs.mobs.Mobs;
 import com.voltskiya.core.mobs.scanning.mechanics.SpawningMechanic;
 import com.voltskiya.core.utils.Pair;
 import com.voltskiya.core.utils.Sorting;
@@ -19,7 +20,6 @@ import static com.voltskiya.core.mobs.scanning.HardScan.SEARCH_DEPTH;
 import static com.voltskiya.core.mobs.scanning.HardScan.biomeToRules;
 
 public class SoftScan {
-    private static final float MOB_PERCENTAGE = 0.05f;
     private static final JsonPrimitive JSON_PRIMITIVE_ZERO = new JsonPrimitive(0);
     private static File mobLocationsTempFolder;
     private static File mobCountsFolder;
@@ -70,7 +70,7 @@ public class SoftScan {
                 totalMobCount += mobCountInt;
                 chunkMobCount[i++] = mobCountInt;
             }
-            int mobLocationsSize = (int) (MOB_PERCENTAGE * totalMobCount);
+            int mobLocationsSize = (int) (Mobs.MOB_PERCENTAGE * totalMobCount);
             int[] mobLocationChoices = new int[mobLocationsSize];
             for (i = 0; i < mobLocationsSize; i++)
                 mobLocationChoices[i] = random.nextInt(totalMobCount); // choose a random number between the first spawnable location and the last
@@ -141,15 +141,18 @@ public class SoftScan {
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             findLocationsNextChunkGroup(lowerX, lowerZ, higherX, higherZ, lowerX, lowerZ);
-        }, 1); // give it a tick
+        }, 1); // give it a tick to do other stuff on the server
     }
 
     private static void findLocationsNextChunkGroup(short lowerX, short lowerZ, short higherX, short higherZ, short currentX, short currentZ) {
         File chunkGroupFile = new File(mobLocationsTempFolder, String.format("%s#%d#%d.json", "world", currentX, currentZ));
         JsonObject chunkGroupContents;
         try {
-            chunkGroupContents = gson.fromJson(new BufferedReader(new FileReader(chunkGroupFile)), JsonObject.class);
-        } catch (FileNotFoundException e) {
+            final BufferedReader reader = new BufferedReader(new FileReader(chunkGroupFile));
+            chunkGroupContents = gson.fromJson(reader, JsonObject.class);
+            reader.close();
+            chunkGroupFile.delete();
+        } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, String.format("%s#%d#%d.json was not found when calculating locations", "world", currentX, currentZ));
             scheduleNextRead(lowerX, lowerZ, higherX, higherZ, currentX, currentZ, 0);
             return;
@@ -326,7 +329,6 @@ public class SoftScan {
             nextX = (short) (currentX + CHUNK_SCAN_INCREMENT);
             if (nextX >= higherX) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                    System.out.println("NULLIFY");
                     mobToFinalLocationsGroup = null; // encourage the garbage collector
                     try {
                         RefactorSoftScan.scan();
@@ -397,14 +399,10 @@ public class SoftScan {
                         JsonElement array = total.get(entry.getKey());
                         if (array == null) {
                             total.add(entry.getKey(), array = new JsonArray());
-                            JsonArray arrayCasted = array.getAsJsonArray();
-                            for (int j = 0; j < CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT; j++) {
-                                arrayCasted.add(JSON_PRIMITIVE_ZERO);
-                            }
                         }
                         JsonArray arrayCasted = array.getAsJsonArray();
                         for (CheapLocation location : entry.getValue()) {
-                            arrayCasted.set(i, gson.toJsonTree(location));
+                            arrayCasted.add( gson.toJsonTree(location));
                         }
                     }
                 }
@@ -459,6 +457,7 @@ public class SoftScan {
             for (short i = 0; i < finalLocationIndexesLength; i++) {
                 mobToFinalLocationIndexes[i] = (short) random.nextInt(spawnableInThisChunk);
             }
+            Arrays.sort(mobToFinalLocationIndexes);
             // We don't want a mob to have 2 spawn locations on the same block
             for (short i = 1; i < finalLocationIndexesLength; i++) {
                 // the next if statement will probably rarely happen, but if it does happen, we shouldn't just
@@ -495,8 +494,6 @@ public class SoftScan {
                 }
             }
         }
-
-
     }
 
 }

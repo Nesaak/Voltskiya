@@ -74,7 +74,7 @@ public class Spawning {
                 CheapLocation location = locations.remove(0);
                 // spawn a mob here
                 if (!chunksToNotSpawn.contains(new Pair<>(location.x / 16, location.z / 16))) {
-                    File chunkFile = new File(registeredMobsFolder, String.format("%s,%d,%d.json", "world", location.x / 16, location.z % 16));
+                    File chunkFile = new File(registeredMobsFolder, String.format("%s,%d,%d.json", "world", location.x / 16, location.z / 16));
                     JsonArray mobsInChunk;
                     if (chunkFile.exists()) {
                         final BufferedReader reader = new BufferedReader(new FileReader(chunkFile));

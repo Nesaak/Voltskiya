@@ -25,9 +25,18 @@ public class Spawning {
         plugin = pl;
         registeredMobsFolder = registeredMobs;
         mobLocationsFolder = mobLocations;
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            try {
+                correctSpawnedNumbers();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }, 20 * 10 /*10 arbitrary seconds*/, 20 * 30 * 60);
     }
 
     public static void correctSpawnedNumbers() throws IOException {
+        if (!Bukkit.getOnlinePlayers().isEmpty())
+            return; // don't refresh when there are online players
         HashMap<String, Integer> mobCount = new HashMap<>();
         for (String mob : Mobs.mobSet) {
             mobCount.put(mob, 0);

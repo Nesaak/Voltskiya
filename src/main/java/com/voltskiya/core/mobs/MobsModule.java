@@ -9,12 +9,9 @@ import com.voltskiya.core.mobs.scanning.RefactorHardScan;
 import com.voltskiya.core.mobs.scanning.RefactorSoftScan;
 import com.voltskiya.core.mobs.scanning.SoftScan;
 import com.voltskiya.core.mobs.spawning.PlayerWatching;
-import com.voltskiya.core.mobs.spawning.Registration;
 import com.voltskiya.core.mobs.spawning.Spawning;
-import com.voltskiya.core.mobs.spawning.Unregistration;
 
 import java.io.File;
-import java.io.IOException;
 
 public class MobsModule extends VoltskiyaModule {
     @Override
@@ -51,8 +48,6 @@ public class MobsModule extends VoltskiyaModule {
 
         // spawning
         Mobs.initialize(mobLocationsFolder);
-        Registration.initialize(plugin, registeredMobsFolder);
-        Unregistration.initialize(plugin, registeredMobsFolder);
         Spawning.initialize(plugin, mobLocationsFolder, registeredMobsFolder);
         new PlayerWatching(plugin, registeredMobsFolder, activeMobsFolder);
         plugin.getCommandManager().registerCommand(new MobsCommand());

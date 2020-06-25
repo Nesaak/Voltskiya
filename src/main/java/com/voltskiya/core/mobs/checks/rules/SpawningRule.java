@@ -1,4 +1,4 @@
-package com.voltskiya.core.mobs.scanning.rules;
+package com.voltskiya.core.mobs.checks.rules;
 
 import com.voltskiya.core.mobs.scanning.SpawningEnvironment;
 

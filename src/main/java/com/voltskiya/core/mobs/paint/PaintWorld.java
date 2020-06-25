@@ -2,6 +2,7 @@ package com.voltskiya.core.mobs.paint;
 
 import com.google.gson.Gson;
 import com.voltskiya.core.Voltskiya;
+import com.voltskiya.core.mobs.MobsModule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
@@ -27,7 +28,7 @@ public class PaintWorld {
 
 
     public static void runGraphics() {
-        PaintersWorld world = namesToWorld.get("world");
+        PaintersWorld world = namesToWorld.get(MobsModule.worldToMoniter);
         graphics = new PaintersGraphics(world);
 
     }

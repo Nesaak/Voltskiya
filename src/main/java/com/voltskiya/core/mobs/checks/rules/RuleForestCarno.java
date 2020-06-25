@@ -1,18 +1,19 @@
-package com.voltskiya.core.mobs.scanning.rules;
+package com.voltskiya.core.mobs.checks.rules;
 
 import com.voltskiya.core.mobs.scanning.SpawningEnvironment;
-import com.voltskiya.core.mobs.scanning.groupUtils.UtilsMaterial;
+import com.voltskiya.core.mobs.checks.groupUtils.UtilsMaterial;
 import org.bukkit.Material;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RuleForestCarno extends SpawningRule {
     public static RuleForestCarno instance = new RuleForestCarno();
-    private static Set<Material> nonSpawnableBlocks = new HashSet<>();
+    private static final List<Material> nonSpawnableBlocks = new ArrayList<>();
 
     static {
         nonSpawnableBlocks.addAll(UtilsMaterial.getLeaves());
+        nonSpawnableBlocks.addAll(UtilsMaterial.getWood());
     }
 
     public static RuleForestCarno get() {

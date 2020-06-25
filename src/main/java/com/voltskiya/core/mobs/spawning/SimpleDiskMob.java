@@ -1,5 +1,7 @@
 package com.voltskiya.core.mobs.spawning;
 
+import com.voltskiya.core.mobs.scanning.CheapLocation;
+
 public class SimpleDiskMob {
     public String name;
     public int x;
@@ -11,6 +13,13 @@ public class SimpleDiskMob {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public SimpleDiskMob(String name, CheapLocation spawnableLocation) {
+        this.name = name;
+        this.x = spawnableLocation.x;
+        this.y = spawnableLocation.y;
+        this.z = spawnableLocation.z;
     }
 
     @Override

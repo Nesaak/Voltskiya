@@ -14,10 +14,12 @@ import com.voltskiya.core.mobs.spawning.Spawning;
 import java.io.File;
 
 public class MobsModule extends VoltskiyaModule {
+    public static final String worldToMoniter = "world";
+
     @Override
     public void enabled() {
         File dataFolder = getDataFolder();
-        File worldDataFolder = new File(dataFolder, "world");
+        File worldDataFolder = new File(dataFolder, MobsModule.worldToMoniter);
         if (!worldDataFolder.exists()) worldDataFolder.mkdir();
 
         File hardScanFolder = new File(dataFolder, "mobCountTemp");

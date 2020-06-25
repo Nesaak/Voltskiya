@@ -9,23 +9,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Mobs {
     private static final Map<String, Pair<EntityType, SpawnableMob>> mobs = new HashMap<>();
-    private static final Map<String, Float> mobsPercentage = new HashMap<>();
-    public static final List<String> mobSet = new ArrayList<>();
-    public static final float MOB_PERCENTAGE = 0.005f; // this is the percentage of spawnable places to chosen spawnable places
+    public static final float MOB_PERCENTAGE = 0.02f; // this is the percentage of spawnable places to chosen spawnable places
     private static File mobLocationsFolder;
     private static final Gson gson = new Gson();
 
     static {
         mobs.put("forestCarno", new Pair<>(EntityType.ZOMBIE, new SpawnableForestCarno()));
-        mobsPercentage.put("forestCarno", 0.20f);
-        mobSet.add("forestCarno");
     }
 
     public static void initialize(File mobLocations) {
@@ -42,10 +35,22 @@ public class Mobs {
         if (file.exists()) {
             JsonArray locations = gson.fromJson(new BufferedReader(new FileReader(file)), JsonArray.class);
             System.out.print(locations.size() + " --> ");
-            System.out.println((int) (mobsPercentage.get(mobName) * locations.size()));
-            return (int) (mobsPercentage.get(mobName) * locations.size());
+            System.out.println((int) (mobs.get(mobName).getValue().getSpawnableToRealPercentage() * locations.size()));
+            return (int) (mobs.get(mobName).getValue().getSpawnableToRealPercentage() * locations.size());
         }
         System.out.println("oof");
         return 0;
+    }
+
+    public static Set<String> getMobSet() {
+        return mobs.keySet();
+    }
+
+    public static float getMobMean(String mobName) {
+        return mobs.get(mobName).getValue().getGroupMean();
+    }
+
+    public static int getMobCountInstance(String mobName) {
+        return mobs.get(mobName).getValue().getGroupInstance();
     }
 }

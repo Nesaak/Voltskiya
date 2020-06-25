@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.voltskiya.core.Voltskiya;
+import com.voltskiya.core.mobs.MobsModule;
 import com.voltskiya.core.mobs.mobs.Mobs;
 import com.voltskiya.core.mobs.mobs.SpawnableMob;
 import com.voltskiya.core.utils.Pair;
@@ -17,9 +18,9 @@ import java.util.*;
 import java.util.logging.Level;
 
 public class PlayerWatching {
-    private static final int TIME_BETWEEN_WATCH_PLAYER = 1 * 20;
-    private static final byte PLAYER_VIEW_DISTANCE = 6;
-    private static final byte PLAYER_PROTECTION_DISTANCE = 2;
+    private static final int TIME_BETWEEN_WATCH_PLAYER = 1 * 20; //todo make this longer
+    private static final byte PLAYER_VIEW_DISTANCE = 1;//6;
+    private static final byte PLAYER_PROTECTION_DISTANCE = 0;//2;
     public static final String MOB_SYSTEM_TAG = "mobSystem";
     private final Voltskiya plugin;
     private final File registeredMobsFolder;
@@ -37,7 +38,7 @@ public class PlayerWatching {
     }
 
     private void watchPlayers() {
-        String worldName = "world";
+        String worldName = MobsModule.worldToMoniter;
         Collection<? extends Player> playersToWatch = new ArrayList<>(Bukkit.getOnlinePlayers());
         Collection<Pair<Integer, Integer>> chunksToLoad;
         Collection<Pair<Integer, Integer>> chunksToRemain = new ArrayList<>();
@@ -47,11 +48,11 @@ public class PlayerWatching {
             Location playerLocation = player.getLocation();
             World world = playerLocation.getWorld();
             if (world != null)
-                if (world.getName().equals("world")) {
+                if (world.getName().equals(MobsModule.worldToMoniter)) {
                     int x = (int) playerLocation.getX() / 16;
                     int z = (int) playerLocation.getZ() / 16;
-                    for (byte xi = -PLAYER_PROTECTION_DISTANCE; xi < PLAYER_PROTECTION_DISTANCE; xi++) {
-                        for (byte zi = -PLAYER_PROTECTION_DISTANCE; zi < PLAYER_PROTECTION_DISTANCE; zi++) {
+                    for (byte xi = -PLAYER_PROTECTION_DISTANCE; xi <= PLAYER_PROTECTION_DISTANCE; xi++) {
+                        for (byte zi = -PLAYER_PROTECTION_DISTANCE; zi <= PLAYER_PROTECTION_DISTANCE; zi++) {
                             chunksToRemain.add(new Pair<>(x + xi, z + zi));
                         }
                     }
@@ -68,7 +69,7 @@ public class PlayerWatching {
             Location playerLocation = player.getLocation();
             World world = playerLocation.getWorld();
             if (world != null)
-                if (world.getName().equals("world")) {
+                if (world.getName().equals(MobsModule.worldToMoniter)) {
                     int x = (int) playerLocation.getX() / 16;
                     int z = (int) playerLocation.getZ() / 16;
                     playerLocations.add(new Pair<>(x, z));
@@ -77,15 +78,15 @@ public class PlayerWatching {
 
         Collection<Pair<Integer, Integer>> chunksToLoad = new ArrayList<>();
         for (Pair<Integer, Integer> playerLocation : playerLocations) {
-            for (byte xi = -PLAYER_VIEW_DISTANCE; xi < PLAYER_VIEW_DISTANCE; xi++) {
-                for (byte zi = -PLAYER_VIEW_DISTANCE; zi < PLAYER_VIEW_DISTANCE; zi++) {
+            for (byte xi = -PLAYER_VIEW_DISTANCE; xi <= PLAYER_VIEW_DISTANCE; xi++) {
+                for (byte zi = -PLAYER_VIEW_DISTANCE; zi <= PLAYER_VIEW_DISTANCE; zi++) {
                     chunksToLoad.add(new Pair<>(playerLocation.getKey() + xi, playerLocation.getValue() + zi));
                 }
             }
         }
         for (Pair<Integer, Integer> playerLocation : playerLocations) {
-            for (byte xi = -PLAYER_PROTECTION_DISTANCE; xi < PLAYER_PROTECTION_DISTANCE; xi++) {
-                for (byte zi = -PLAYER_PROTECTION_DISTANCE; zi < PLAYER_PROTECTION_DISTANCE; zi++) {
+            for (byte xi = -PLAYER_PROTECTION_DISTANCE; xi <= PLAYER_PROTECTION_DISTANCE; xi++) {
+                for (byte zi = -PLAYER_PROTECTION_DISTANCE; zi <= PLAYER_PROTECTION_DISTANCE; zi++) {
                     chunksToLoad.remove(new Pair<>(playerLocation.getKey() + xi, playerLocation.getValue() + zi));
                 }
             }
@@ -171,7 +172,6 @@ public class PlayerWatching {
         String fileName = String.format("%s,%d,%d.json", worldName, x, z);
         File fileChunkToLoad = new File(registeredMobsFolder, fileName);
         if (fileChunkToLoad.exists()) {
-            System.out.println("load chunk " + chunkToLoad.toString());
             // we have a record of this chunk in this world
             BufferedReader read = new BufferedReader(new FileReader(fileChunkToLoad));
             JsonArray mobsToLoad = gson.fromJson(read, JsonArray.class);
@@ -179,7 +179,6 @@ public class PlayerWatching {
                 SimpleDiskMob mobToLoad = gson.fromJson(mobToLoadJson, SimpleDiskMob.class);
                 // load the mob
                 Pair<EntityType, SpawnableMob> mobStructure = Mobs.getMobStructure(mobToLoad.name);
-                System.out.println(String.format("full: %d, x: %d, sub: %d", x * 16 + mobToLoad.x, x, mobToLoad.x));
                 Entity spawned = world.spawnEntity(new Location(world, x * 16 + mobToLoad.x, mobToLoad.y, z * 16 + mobToLoad.z), mobStructure.getKey());
                 ((LivingEntity) spawned).setRemoveWhenFarAway(false); // this is my mob D:
                 spawned.addScoreboardTag(MOB_SYSTEM_TAG);
@@ -188,8 +187,6 @@ public class PlayerWatching {
                 System.out.println(spawned.getName() + " was spawned at " + (x * 16 + mobToLoad.x) + ", " + (z * 16 + mobToLoad.z));
             }
             read.close();
-            System.out.println("killing chunk soon");
-            System.out.println(fileChunkToLoad.delete());
         }
         File fileActiveChunk = new File(activeMobsFolder, fileName);
         if (!fileActiveChunk.exists()) fileActiveChunk.createNewFile();

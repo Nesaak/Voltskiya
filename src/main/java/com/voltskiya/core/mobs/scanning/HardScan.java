@@ -3,8 +3,9 @@ package com.voltskiya.core.mobs.scanning;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.voltskiya.core.mobs.scanning.mechanics.SpawningMechanic;
-import com.voltskiya.core.mobs.scanning.mechanics.MechanicForestFloor;
+import com.voltskiya.core.mobs.checks.CheckSpawnable;
+import com.voltskiya.core.mobs.checks.mechanics.SpawningMechanic;
+import com.voltskiya.core.mobs.checks.mechanics.MechanicForestFloor;
 import com.voltskiya.core.utils.CheapMap;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
@@ -22,13 +23,6 @@ public class HardScan {
     public static final int SEARCH_DEPTH = 10;
     private static final Gson gson = new Gson();
     private static File mobCountFolder;
-
-
-    public static Map<Biome, SpawningMechanic> biomeToRules = new HashMap<>();
-
-    static {
-        biomeToRules.put(Biome.GIANT_TREE_TAIGA, new MechanicForestFloor());
-    }
 
 
     public static void initialize(File folder) {
@@ -74,7 +68,7 @@ public class HardScan {
 
                                 // if the we're at a surface of a section of blocks
                                 if (timesSolid++ == 0) {
-                                    SpawningMechanic mechanic = biomeToRules.get(biome);
+                                    SpawningMechanic mechanic = CheckSpawnable.biomeToRules.get(biome);
                                     if (mechanic != null) {
                                         SpawningEnvironment environment = new SpawningEnvironment(biome, blockType, y, emptySpace);
                                         for (String mobName : mechanic.getSpawnableMobs()) {

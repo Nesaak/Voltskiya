@@ -2,8 +2,9 @@ package com.voltskiya.core.mobs.scanning;
 
 import com.google.gson.*;
 import com.voltskiya.core.Voltskiya;
+import com.voltskiya.core.mobs.MobsModule;
 import com.voltskiya.core.mobs.mobs.Mobs;
-import com.voltskiya.core.mobs.scanning.mechanics.SpawningMechanic;
+import com.voltskiya.core.mobs.checks.mechanics.SpawningMechanic;
 import com.voltskiya.core.utils.Pair;
 import com.voltskiya.core.utils.Sorting;
 import org.bukkit.*;
@@ -17,7 +18,7 @@ import java.util.logging.Level;
 
 import static com.voltskiya.core.mobs.MobsCommand.CHUNK_SCAN_INCREMENT;
 import static com.voltskiya.core.mobs.scanning.HardScan.SEARCH_DEPTH;
-import static com.voltskiya.core.mobs.scanning.HardScan.biomeToRules;
+import static com.voltskiya.core.mobs.checks.CheckSpawnable.biomeToRules;
 
 public class SoftScan {
     private static final JsonPrimitive JSON_PRIMITIVE_ZERO = new JsonPrimitive(0);
@@ -84,7 +85,7 @@ public class SoftScan {
 
     private static void findLocations(List<Indexes> mobToIndices) throws IOException {
         // this is an index to determine where we currently are going through the indexes for each mob
-        World world = Bukkit.getWorld("world"); // todo change this to use a constant determined in a yml for settings
+        World world = Bukkit.getWorld(MobsModule.worldToMoniter); // todo change this to use a constant determined in a yml for settings
         @NotNull WorldBorder border = world.getWorldBorder();
         @NotNull Location borderCenter = border.getCenter();
         double size = border.getSize();
@@ -132,7 +133,7 @@ public class SoftScan {
                         currentChunkSubIndex++;
                     }
                 }
-                File fileToWrite = new File(mobLocationsTempFolder, String.format("%s#%d#%d.json", "world", x, z));
+                File fileToWrite = new File(mobLocationsTempFolder, String.format("%s#%d#%d.json", MobsModule.worldToMoniter, x, z));
                 if (!fileToWrite.exists()) fileToWrite.createNewFile();
                 BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileToWrite));
                 gson.toJson(chunksToMob, fileWriter);
@@ -145,7 +146,7 @@ public class SoftScan {
     }
 
     private static void findLocationsNextChunkGroup(short lowerX, short lowerZ, short higherX, short higherZ, short currentX, short currentZ) {
-        File chunkGroupFile = new File(mobLocationsTempFolder, String.format("%s#%d#%d.json", "world", currentX, currentZ));
+        File chunkGroupFile = new File(mobLocationsTempFolder, String.format("%s#%d#%d.json", MobsModule.worldToMoniter, currentX, currentZ));
         JsonObject chunkGroupContents;
         try {
             final BufferedReader reader = new BufferedReader(new FileReader(chunkGroupFile));
@@ -153,7 +154,7 @@ public class SoftScan {
             reader.close();
             chunkGroupFile.delete();
         } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, String.format("%s#%d#%d.json was not found when calculating locations", "world", currentX, currentZ));
+            plugin.getLogger().log(Level.SEVERE, String.format("%s#%d#%d.json was not found when calculating locations", MobsModule.worldToMoniter, currentX, currentZ));
             scheduleNextRead(lowerX, lowerZ, higherX, higherZ, currentX, currentZ, 0);
             return;
         }
@@ -174,7 +175,7 @@ public class SoftScan {
         }
         short delayCounter = 0;
         int xi = 0, zi = 0;
-        World world = Bukkit.getWorld("world"); //todo deal with getting the correct world somehow. probably just a setting in a yml
+        World world = Bukkit.getWorld(MobsModule.worldToMoniter);
 
         for (List<Pair<String, Short>> chunkToMobsLocationCount : chunkToMobLocationCountAll) {
             // chunkToMobsLocationCount is either null or a list with the size of 'CHUNK_SCAN_INCREMENT * CHUNK_SCAN_INCREMENT'
@@ -198,7 +199,7 @@ public class SoftScan {
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             try {
-                save("world", currentX, currentZ);
+                save(MobsModule.worldToMoniter, currentX, currentZ);
             } catch (IOException e) {
                 e.printStackTrace();
             }
